@@ -1,0 +1,9 @@
+# swap file
+*~
+*.kate-swp
+# IDE/build dir
+/.idea
+/.vscode
+/build
+/cmake-build*
+/.cache
