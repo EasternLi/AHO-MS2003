@@ -10,7 +10,9 @@ public:
 	
 	void push(size_t x);
 	
-	size_t pop();
+	size_t front();
+	
+	void pop();
 	
 	bool empty();
 	

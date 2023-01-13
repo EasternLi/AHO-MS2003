@@ -8,11 +8,11 @@ void UniqueQueue::push(size_t x) {
 	queue.push(x);
 }
 
-size_t UniqueQueue::pop() {
-	auto ret = queue.front();
+size_t UniqueQueue::front() { return queue.front(); }
+
+void UniqueQueue::pop() {
+	is_in_queue[queue.front()] = false;
 	queue.pop();
-	is_in_queue[ret] = false;
-	return ret;
 }
 
 bool UniqueQueue::empty() { return queue.empty(); }

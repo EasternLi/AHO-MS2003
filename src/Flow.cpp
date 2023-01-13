@@ -28,8 +28,11 @@ Data Flow::min_cost() {
 	for (; ε * (n + 1) >= Data(1); ε /= 2) {
 		initialization();
 		push_all_admissible_edge();
-		while (not uq.empty())
-			choice_operator(uq.pop());
+		while (not uq.empty()) {
+			choice_operator(uq.front());
+			if (not greater_than_zero(imbalances[uq.front()]))
+				uq.pop();
+		}
 		for (size_t i = 0; i <= n; ++i)
 			if (fa[i] != size_t(-1))
 				cut(i);
@@ -110,7 +113,6 @@ void Flow::tree_push(size_t p) {
 		cut(min.second);
 		root = &nodes[min.second];
 	}
-	choice_operator(p);
 }
 
 void Flow::update_scaling(size_t p) {
@@ -121,7 +123,6 @@ void Flow::update_scaling(size_t p) {
 	current_edge[p] = 0;
 	// after `cut`, where we need old `scaling` to get old `q`
 	scaling[p] += ε / 2;
-	choice_operator(p);
 }
 
 void Flow::link(size_t p) {
