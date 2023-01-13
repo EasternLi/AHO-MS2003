@@ -1,4 +1,4 @@
-#include "Problem.hpp"
+#include "ProblemSolver.hpp"
 #include <cmath>
 #include <cstdio>
 
@@ -15,7 +15,7 @@ int main() {
 }
 
 void test_1() {
-	Problem p(
+	ProblemSolver p(
 		1,
 		{0, 2},
 		{0, 3},
@@ -30,7 +30,7 @@ void test_1() {
 }
 
 void test_2() {
-	Problem p(
+	ProblemSolver p(
 		2,
 		{0, -2, -2},
 		{0, +2, +2},
@@ -54,7 +54,7 @@ void test_2() {
 }
 
 void test_3() {
-	Problem p(
+	ProblemSolver p(
 		2,
 		{0, -2, -2},
 		{0, +2, +2},

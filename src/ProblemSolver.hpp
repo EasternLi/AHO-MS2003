@@ -1,20 +1,17 @@
 #pragma once
 
+#include "ProblemDefine.hpp"
 #include <cstddef>
 #include <cassert>
 #include <forward_list>
-#include <functional>
 #include <iterator>
 #include <map>
 #include <utility>
 #include <vector>
 
-using Data = double;
-using Fn = std::function<Data(int)>;
-
-class Problem {
+class ProblemSolver {
 public:
-	Problem(
+	ProblemSolver(
 			size_t n,
 			std::vector<int> P_ls,
 			std::vector<int> P_us,

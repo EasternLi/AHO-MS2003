@@ -1,18 +1,16 @@
 #pragma once
 
-#include "Problem.hpp"
+#include "ProblemSolver.hpp"
 #include "LCT.hpp"
 #include "UniqueQueue.hpp"
 #include <limits>
 #include <numeric>
 #include <cmath>
 
-using Data = double;
-
 class Flow {
 public:
 	Flow(size_t n, Data M, int U,
-	     std::map<std::pair<size_t, size_t>, std::forward_list<Problem::Edge>> mp);
+	     std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> mp);
 	
 	Data min_cost();
 

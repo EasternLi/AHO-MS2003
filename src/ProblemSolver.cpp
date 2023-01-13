@@ -1,8 +1,8 @@
-#include "Problem.hpp"
+#include "ProblemSolver.hpp"
 #include "Flow.hpp"
 #include <numeric>
 
-Problem::Problem(
+ProblemSolver::ProblemSolver(
 		size_t n,
 		std::vector<int> P_ls,
 		std::vector<int> P_us,
@@ -40,7 +40,7 @@ Problem::Problem(
 }
 
 template<bool is_F>
-void Problem::handle_fn(int l, int u, Fn &fn) {
+void ProblemSolver::handle_fn(int l, int u, Fn &fn) {
 	auto fn_max = fn(u);
 	if (not is_F)
 		fn_max = std::max(fn(l), fn_max);
@@ -57,12 +57,12 @@ void Problem::handle_fn(int l, int u, Fn &fn) {
 		fn = [l, fn](int x) { return fn(std::max(l, x)); };
 }
 
-Data Problem::solve() {
+Data ProblemSolver::solve() {
 	Flow flow(n, M, U, merge_edge());
 	return flow.min_cost();
 }
 
-void Problem::bound_fn(int l, int u, Fn &fn) {
+void ProblemSolver::bound_fn(int l, int u, Fn &fn) {
 	fn = [this, l, u, fn](int x) {
 		if (x > u) return fn(u) + M * (x - u);
 		if (x < l) return fn(l) - M * (x - l);
@@ -70,8 +70,8 @@ void Problem::bound_fn(int l, int u, Fn &fn) {
 	};
 }
 
-std::map<std::pair<size_t, size_t>, std::forward_list<Problem::Edge>> Problem::merge_edge() {
-	std::map<std::pair<size_t, size_t>, std::forward_list<Problem::Edge>> mp;
+std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> ProblemSolver::merge_edge() {
+	std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> mp;
 	for (size_t i = 1; i <= n; ++i)
 		mp[{i, 0}].push_front(Edge{P_ls[i], P_us[i], P_Bs[i]});
 	P_ls.clear();

@@ -1,10 +1,6 @@
 #include "Flow.hpp"
 
-static bool greater_than_zero(Data x) {
-	return x > 1e-9;
-}
-
-Flow::Flow(size_t n, Data M, int U, std::map<std::pair<size_t, size_t>, std::forward_list<Problem::Edge>> mp)
+Flow::Flow(size_t n, Data M, int U, std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> mp)
 		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), sons(n + 1),
 		  fa(n + 1, -1) {
 	edges.reserve(mp.size() * 2);
