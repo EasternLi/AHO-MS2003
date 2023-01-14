@@ -1,22 +1,23 @@
 #include "Flow.hpp"
+#include <cmath>
+#include <limits>
 
-Flow::Flow(size_t n, Data M, int U, std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> mp)
+Flow::Flow(size_t n, Data M, int U, std::vector<ωLimit> limits)
 		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), sons(n + 1),
 		  fa(n + 1, -1) {
-	edges.reserve(mp.size() * 2);
+	edges.reserve(limits.size() * 2);
+	flows.resize (limits.size() * 2);
 	G.resize(n + 1);
 	scaling.resize(n + 1);
-	for (auto &[ij, _e]: mp) {
-		auto [i, j] = ij;
-		auto &e = _e.front();
+	
+	for (auto edge: limits) {
+		G[edge.i].push_back(edges.size());
+		edges.push_back(edge);
 		
-		G[i].push_back(edges.size());
-		edges.push_back({i, j, +e.l, +e.u, 0, e.fn});
+		edge.reverse();
 		
-		G[j].push_back(edges.size());
-		edges.push_back({j, i, -e.u, -e.l, 0, [fn(edges.back().fn)](int x) {
-			return fn(-x);
-		}});
+		G[edge.i].push_back(edges.size());
+		edges.push_back(edge);
 	}
 }
 
@@ -24,37 +25,22 @@ Data Flow::min_cost() {
 	for (; ε * (n + 1) >= Data(1); ε /= 2) {
 		initialization();
 		push_all_admissible_edge();
-		while (not uq.empty()) {
-			choice_operator(uq.front());
-			if (not greater_than_zero(imbalances[uq.front()]))
-				uq.pop();
-		}
-		for (size_t i = 0; i <= n; ++i)
-			if (fa[i] != size_t(-1))
-				cut(i);
+		refine();
 	}
 	Data answer = 0;
-	for (auto [_i, _j, l, u, x, fn]: edges) {
-		fn = [x, fn](int w) { return fn(w) - x * w; };
-		while (l != u) {
-			auto mid = std::midpoint(l, u);
-			if (fn(mid) <= fn(mid + 1))u = mid;
-			else l = mid + 1;
-		}
-		answer += fn(l);
+	for (size_t e_id = 0; e_id < edges.size(); ++e_id) {
+		auto &e = edges[e_id];
+		// 根据论文 (9b) 下一段。
+		e.fn = [x(flows[e_id]), fn(e.fn)](int w) { return fn(w) - x * w; };
+		answer += e.min();
 	}
-	answer /= 2;
+	
+	answer /= 2; // 每条边在`edges`中各出现两次。
 	return answer;
 }
 
-Data Flow::q(size_t e_id) {
-	auto &e = edges[e_id];
-	auto t = scaling[e.from] - scaling[e.to];
-	if (t >= e.u)return M - e.flow;
-	return std::max(Data(0), e.b(std::floor(t)) - e.flow);
-}
-
 void Flow::initialization() {
+	// 部分变量在迭代前后不变。
 	for (size_t i = 0; i <= n; ++i)
 		nodes[i].clear({std::numeric_limits<Data>::infinity(), i});
 	// std::fill(imbalances.begin(), imbalances.end(), 0);
@@ -69,10 +55,9 @@ void Flow::push_all_admissible_edge() {
 		auto &e = edges[e_id];
 		auto _q = q(e_id);
 		if (greater_than_zero(_q)) {
-			imbalances[e.from] -= _q;
-			imbalances[e.to  ] += _q;
-			e.flow += _q;
-			edges[e_id ^ 1].flow -= _q;
+			imbalances[e.i] -= _q;
+			imbalances[e.j] += _q;
+			add_flow_of_edge(e_id, _q);
 		}
 	}
 	for (size_t i = 0; i <= n; ++i)
@@ -80,17 +65,30 @@ void Flow::push_all_admissible_edge() {
 			uq.push(i);
 }
 
+void Flow::refine() {
+	while (not uq.empty()) {
+		choice_operator(uq.front());
+		if (not greater_than_zero(imbalances[uq.front()]))
+			uq.pop();
+	}
+	// 如论文二 p15 第三段最后一句话。
+	for (size_t i = 0; i <= n; ++i)
+		if (fa[i] != size_t(-1))
+			cut(i);
+}
+
 void Flow::choice_operator(size_t p) {
 	for (; current_edge[p] < G[p].size(); ++current_edge[p]) {
-		if (greater_than_zero(q(G[p][current_edge[p]])))
-			return tree_push(p);
+		auto e_id = G[p][current_edge[p]];
+		if (greater_than_zero(q(e_id)))
+			return link(p), send(p);
 	}
 	update_scaling(p);
 }
 
-void Flow::tree_push(size_t p) {
-	link(p);
+void Flow::send(size_t p) {
 	auto root = nodes[p].find_root();
+	// 从 p 点推 x 单位流至根节点。
 	auto push = [&](Data x) {
 		auto root_id = root - nodes.data();
 		LCT::add(&nodes[p], root, -x);
@@ -112,25 +110,40 @@ void Flow::tree_push(size_t p) {
 }
 
 void Flow::update_scaling(size_t p) {
+	// 如论文二 p15 第二段最后一句话。
 	for (auto cut_p: sons[p])
 		if (fa[cut_p] == p)
 			cut(cut_p);
 	sons[p].clear();
-	current_edge[p] = 0;
-	// after `cut`, where we need old `scaling` to get old `q`
+	// 在`cut`之后修改。因其需要之前的`q`，其又需要之前的`scaling`。
 	scaling[p] += ε / 2;
+	current_edge[p] = 0;
+}
+
+Data Flow::q(size_t e_id) {
+	auto &e = edges[e_id];
+	int t = std::floor(scaling[e.i] - scaling[e.j]);
+	// 下面两个条件语句起到了论文第一章假设二的作用。
+	if (t + 1 > e.u)return M - flows[e_id];
+	if (t < e.l)return 0;
+	return std::max(Data(0), e.fn(t+1) - e.fn(t) - flows[e_id]);
+}
+
+void Flow::add_flow_of_edge(size_t e_id, Data flow_add) {
+	flows[e_id] += flow_add;
+	flows[e_id ^ 1] = -flows[e_id];
 }
 
 void Flow::link(size_t p) {
 	auto e_id = G[p][current_edge[p]];
 	auto &e = edges[e_id];
-	sons[e.to].push_back(p);
-	fa[p] = e.to;
+	sons[e.j].push_back(p);
+	fa[p] = e.j;
 	
 	nodes[p].push_down();
 	nodes[p].val.first = q(e_id);
 	nodes[p].push_up();
-	nodes[p].fa = &nodes[e.to];
+	nodes[p].fa = &nodes[e.j];
 }
 
 void Flow::cut(size_t p) {
@@ -139,24 +152,8 @@ void Flow::cut(size_t p) {
 	nodes[p].push_down();
 	
 	auto e_id = G[p][current_edge[p]];
-	auto &e = edges[e_id];
-	e.flow += q(e_id) - nodes[p].val.first;
-	edges[e_id ^ 1].flow = -e.flow;
+	add_flow_of_edge(e_id, q(e_id) - nodes[p].val.first);
 	
 	nodes[p].val.first = std::numeric_limits<Data>::infinity();
 	nodes[p].push_up();
 }
-
-//int Flow::Edge::cost() {
-//	auto _l=l, _r=u;
-//	while (_l!=_r) {
-//		auto mid = std::midpoint(_l, _r);
-//		if(b(mid)>flow)_r=mid;
-//		else _l=mid+1;
-//	}
-//	return _l;
-//}
-
-//Data Flow::scaled_cost(size_t i) {
-//	return edges[i].cost()-scaling[edges[i].from]+scaling[edges[i].to];
-//}

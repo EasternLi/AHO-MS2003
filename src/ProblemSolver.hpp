@@ -2,50 +2,32 @@
 
 #include "ProblemDefine.hpp"
 #include <cstddef>
-#include <cassert>
-#include <forward_list>
-#include <iterator>
-#include <map>
-#include <utility>
 #include <vector>
 
 class ProblemSolver {
 public:
+	// μs[0] 会被忽略。
 	ProblemSolver(
 			size_t n,
-			std::vector<int> P_ls,
-			std::vector<int> P_us,
-			std::vector<Fn> P_Bs,
-			std::vector<std::vector<size_t>> Q_to,
-			std::vector<std::vector<int>> Q_ls,
-			std::vector<std::vector<int>> Q_us,
-			std::vector<std::vector<Fn>> Q_Fs
+			std::vector<μLimit> μs,
+			std::vector<ωLimit> ωs
 	);
 	
+	// 返回值即所求的最小值。
+	// NOTE: 一个实例仅可调用一次。
 	Data solve();
-	
-	class Edge {
-	public:
-		int l, u;
-		Fn fn;
-	};
-
 private:
-	template<bool is_F>
-	void handle_fn(int l, int u, Fn &fn);
-	
-	void bound_fn(int l, int u, Fn &fn);
-	
-	std::map<std::pair<size_t, size_t>, std::forward_list<Edge>> merge_edge();
+	// 根据论文第二章 (6)(7) 中间段，构建网络并返回。
+	std::vector<ωLimit> merge_limits();
 	
 	size_t n;
-	std::vector<int> P_ls, P_us;
-	std::vector<Fn> P_Bs;
+	std::vector<μLimit> μs;
+	std::vector<ωLimit> ωs;
 	
-	std::vector<std::vector<size_t>> Q_to;
-	std::vector<std::vector<int>> Q_ls, Q_us;
-	std::vector<std::vector<Fn>> Q_Fs;
-	
-	Data M = 1;
-	int U = 0;
+	// 论文第一章假设二中引入的值。
+	// 在`merge_limits`中合并边后计算，这可能降低一定大小。
+	Data M;
+	// 论文摘要中引入的值。
+	// 在`merge_limits`中合并边后计算，这可能降低一定大小。
+	int U;
 };

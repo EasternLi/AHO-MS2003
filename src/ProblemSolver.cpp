@@ -1,116 +1,69 @@
 #include "ProblemSolver.hpp"
 #include "Flow.hpp"
-#include <numeric>
+#include <cassert>
+#include <map>
+#include <ranges>
+#include <utility>
 
 ProblemSolver::ProblemSolver(
 		size_t n,
-		std::vector<int> P_ls,
-		std::vector<int> P_us,
-		std::vector<Fn> P_Bs,
-		std::vector<std::vector<size_t>> Q_to,
-		std::vector<std::vector<int>> Q_ls,
-		std::vector<std::vector<int>> Q_us,
-		std::vector<std::vector<Fn>> Q_Fs
-) : n(n), P_ls(P_ls), P_us(P_us), P_Bs(P_Bs), Q_to(Q_to), Q_ls(Q_ls), Q_us(Q_us), Q_Fs(Q_Fs) {
+		std::vector<μLimit> μs,
+		std::vector<ωLimit> ωs
+) : n(n), μs(μs), ωs(ωs), M(1), U(0) {
 	assert(n > 0);
-	assert(P_ls.size() == n + 1);
-	assert(P_us.size() == n + 1);
-	assert(P_Bs.size() == n + 1);
-	for (size_t i = 1; i <= n; ++i) {
-		assert(P_ls[i] <= P_us[i]);
-		handle_fn<false>(P_ls[i], P_us[i], P_Bs[i]);
+	assert(μs.size() == n + 1);
+	for (auto &it: μs | std::views::drop(1)) {
+		assert(it.l <= it.u);
 	}
-	assert(Q_to.size() == n + 1);
-	assert(Q_ls.size() == n + 1);
-	assert(Q_us.size() == n + 1);
-	assert(Q_Fs.size() == n + 1);
 	
-	for (size_t i = 1; i <= n; ++i) {
-		assert(Q_ls[i].size() == Q_to[i].size());
-		assert(Q_us[i].size() == Q_to[i].size());
-		assert(Q_Fs[i].size() == Q_to[i].size());
+	for (auto &it: ωs) {
+		assert(1 <= it.i and it.i <= n);
+		assert(1 <= it.j and it.j <= n);
+		assert(it.i != it.j);
 		
-		for (size_t j = 0; j < Q_to[i].size(); ++j) {
-			assert(Q_ls[i][j] <= Q_us[i][j]);
-			handle_fn<true>(Q_ls[i][j], Q_us[i][j], Q_Fs[i][j]);
-			Q_ls[i][j] = P_ls[i] - P_us[Q_to[i][j]];
-			assert(Q_ls[i][j] <= Q_us[i][j]);
-		}
+		assert(it.l <= it.u);
+		it.pre_processing();
+		// 该点论文中未提及，但应为论文第一章假设三的一部分。
+		it.l = μs[it.i].l - μs[it.j].u;
+		assert(it.l <= it.u);
 	}
-}
-
-template<bool is_F>
-void ProblemSolver::handle_fn(int l, int u, Fn &fn) {
-	auto fn_max = fn(u);
-	if (not is_F)
-		fn_max = std::max(fn(l), fn_max);
-	
-	while (l != u) {
-		auto mid = std::midpoint(l, u);
-		if (fn(mid) <= fn(mid + 1)) u = mid;
-		else l = mid + 1;
-	}
-	
-	M += fn_max - fn(l);
-	
-	if (is_F)
-		fn = [l, fn](int x) { return fn(std::max(l, x)); };
 }
 
 Data ProblemSolver::solve() {
-	Flow flow(n, M, U, merge_edge());
+	Flow flow(n, M, U, merge_limits());
 	return flow.min_cost();
 }
 
-void ProblemSolver::bound_fn(int l, int u, Fn &fn) {
-	fn = [this, l, u, fn](int x) {
-		if (x > u) return fn(u) + M * (x - u);
-		if (x < l) return fn(l) - M * (x - l);
-		return fn(x);
-	};
-}
-
-std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> ProblemSolver::merge_edge() {
-	std::map<std::pair<size_t, size_t>, std::forward_list<ProblemSolver::Edge>> mp;
+std::vector<ωLimit> ProblemSolver::merge_limits() {
+	// 应论文 p956 右侧首段中的要求，合并无序对 (i,j) 相同的限制。
+	// 论文中该步骤在网络流部分，但该实现提前至这里。
+	// 此次 map 可改为 unorder_* 变种，也有办法避免键在值中重复。但不是热代码，不进行优化。
+	std::map<std::pair<size_t, size_t>, ωLimit> mp;
+	for (auto &it: ωs) {
+		// 规定 (i,j) 顺序。
+		if (it.i < it.j)
+			it.reverse();
+		// 去重。
+		if (auto p = mp.find({it.i, it.j}); p != mp.end())
+			p->second.merge(it);
+		else
+			mp[{it.i, it.j}] = it;
+	}
+	ωs.clear();
+	
+	std::vector<ωLimit> ret;
+	ret.reserve(mp.size() + n);
+	
+	for (auto &[k, v]: mp)
+		ret.push_back(v);
 	for (size_t i = 1; i <= n; ++i)
-		mp[{i, 0}].push_front(Edge{P_ls[i], P_us[i], P_Bs[i]});
-	P_ls.clear();
-	P_us.clear();
-	P_Bs.clear();
+		ret.push_back({μs[i], i, 0});
+	μs.clear();
 	
-	for (size_t i = 1; i <= n; ++i) {
-		for (size_t j = 0; j < Q_to[i].size(); ++j) {
-			auto to = Q_to[i][j];
-			if (i < to)
-				mp[{i, to}].push_front(
-						Edge{+Q_ls[i][j], +Q_us[i][j], Q_Fs[i][j]});
-			else
-				mp[{to, i}].push_front(
-						Edge{-Q_us[i][j], -Q_ls[i][j], [fn(Q_Fs[i][j])](int x) {
-							return fn(-x);
-						}});
-		}
+	for (auto &it: ret) {
+		M += std::max(it.fn(it.l), it.fn(it.u)) - it.min();
+		U  = std::max(U, it.u - it.l);
 	}
-	Q_to.clear();
-	Q_ls.clear();
-	Q_us.clear();
-	Q_Fs.clear();
 	
-	for (auto &[_, es]: mp) {
-		if (std::next(es.begin()) != es.end()) {
-			// assert(es.size()==2);
-			auto e = std::move(es.front());
-			es.pop_front();
-			es.front().l = std::max(es.front().l, e.l);
-			es.front().u = std::min(es.front().u, e.u);
-			assert(es.front().l <= es.front().u);
-			es.front().fn = [fn1(e.fn), fn2(es.front().fn)](int x) {
-				return fn1(x) + fn2(x);
-			};
-		}
-		auto &e = es.front();
-		bound_fn(e.l, e.u, e.fn);
-		U = std::max(U, e.u - e.l);
-	}
-	return mp;
+	return ret;
 }

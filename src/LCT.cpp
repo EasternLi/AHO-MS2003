@@ -2,9 +2,7 @@
 //! in 3.5.7
 
 #include "LCT.hpp"
-
 #include <algorithm>
-#include <climits>
 #include <limits>
 
 LCT::Node *LCT::null = []() {
