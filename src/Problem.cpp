@@ -39,9 +39,20 @@ Problem::Problem(
 	}
 }
 
+/*
+May not Correct.
+example :
+B_1(u_1)=-u_1,u_1\in[0,0]
+B_2(u_2)=u_2,u_2\in[0,0]
+F_{12}(w_{12})=2x^2+3x,w_{ij}\in[-2,2]
+L_f=F_{12}(-2)+B_1(0)+B_2(0)=14
+L_d=F_{12}(1)+B_1(0)+B_2(0)=-1
+expected M>15 , found function result M=4
+*/
+
 template<bool is_F>
 void Problem::handle_fn(int l, int u, Fn &fn) {
-	auto fn_max = fn(u);
+	auto fn_max = fn(u);//May fn_max=max(fn(l),fn(u))
 	if (not is_F)
 		fn_max = std::max(fn(l), fn_max);
 	
@@ -50,12 +61,15 @@ void Problem::handle_fn(int l, int u, Fn &fn) {
 		if (fn(mid) <= fn(mid + 1)) u = mid;
 		else l = mid + 1;
 	}
-	
+	//printf("fn_max = %lf , l = %d , fn(l) = %lf\n",fn_max,l,fn(l));
 	M += fn_max - fn(l);
-	
 	if (is_F)
 		fn = [l, fn](int x) { return fn(std::max(l, x)); };
 }
+
+Data Problem::GetM(){
+	return M;
+};
 
 Data Problem::solve() {
 	Flow flow(n, M, U, merge_edge());

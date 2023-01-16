@@ -27,6 +27,8 @@ public:
 	
 	Data solve();
 	
+	Data GetM();
+
 	class Edge {
 	public:
 		int l, u;
