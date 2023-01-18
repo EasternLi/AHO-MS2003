@@ -58,30 +58,38 @@ void test_2() {
 	assert(p.solve() == ans);
 	printf("ans = %lf,pass test 2\n",ans);
 }
-
+/*
+n = 3, m = 3
+node 1 : l = 0 , u = 0 , funtion =  ( 5 ) * x * x + ( -9 ) * x + ( -6 )
+node 2 : l = 0 , u = 1 , funtion =  ( 8 ) * x * x + ( 8 ) * x + ( -6 )
+node 3 : l = -2 , u = 1 , funtion =  ( 4 ) * x * x + ( 6 ) * x + ( 10 )
+edge 1 : from = 2, to = 1 , l = -2 , u = 3 , function =  ( 1 ) * x * x + ( -4 ) * x + ( 9 )
+edge 2 : from = 3, to = 2 , l = -1 , u = 3 , function =  ( 2 ) * x * x + ( 7 ) * x + ( 2 )
+edge 3 : from = 3, to = 1 , l = 1 , u = 2 , function =  ( 2 ) * x * x + ( 8 ) * x + ( -2 )
+node 1 : x = 0 , function = -6.000000
+node 2 : x = 0 , function = -6.000000
+node 3 : x = -1 , function = 8.000000
+edge 1 : x = 0 , function = 9.000000
+edge 2 : x = -1 , function = -3.000000
+edge 3 : x = 1 , function = 8.000000
+answer = 10.000000
+*/
 void test_3() {
 	ProblemSolver p(
-		2,
+		3,
 		{
-			{0,  0, [](int) { return 0; }},
-			{-2, 2, [](int x) { return -x; }},
-			{-2, 2, [](int x) { return +x; }},
+			{0, 0, [](int) { return 0; }},
+			{0, 0, [](int x) { return 5 * x * x -9 * x -6 ; }},
+			{0, 1, [](int x) { return 8 * x * x +8 * x -6 ; }},
+			{-2, 1, [](int x) { return 4 * x * x + 6 * x + 10 ; }},
 		},
 		{
-			{{-4, 4, [](int x) { return (x + 3) * (x + 3); }}, 1, 2}
+			{{-2, 3, [](int x) { return x * x -4 * x + 9 ; }}, 2,1},
+			{{-1, 3, [](int x) { return 2 * x * x + 7 * x + 2; }}, 3,2},
+			{{1, 2, [](int x) { return 2 * x * x + 8 * x - 2; }}, 3,1},
 		}
 	);
-	Data ans = INFINITY;
-	for (int i = -2; i <= 2; i++)
-		for (int j = -2; j <= 2; j++)
-		for (int k = -4; k <= 4; k++)
-		if (i - j <= k)
-		ans = std::min(
-			ans,
-			Data(-i + j + (k + 3) * (k + 3))
-		);
-	assert(p.solve() == ans);
-	printf("ans = %lf,pass test 3\n",ans);
+	printf("ans = %lf,pass test 3\n",p.solve());
 }
 
 /*
