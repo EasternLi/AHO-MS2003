@@ -90,10 +90,16 @@ void LCT::Node::push_down() {
 	}
 }
 
-void LCT::Node::go() {
+void LCT::Node::push_down_from_root() {
 	if (!is_root())
-		fa->go();
+		fa->push_down_from_root();
 	push_down();
+}
+
+void LCT::Node::push_up_to_root() {
+	push_up();
+	if (!is_root())
+		fa->push_up_to_root();
 }
 
 void LCT::Node::rot() {
@@ -109,7 +115,7 @@ void LCT::Node::rot() {
 }
 
 LCT::Node *LCT::Node::splay() {
-	go();
+	push_down_from_root();
 	while (!is_root()) {
 		if (!fa->is_root())
 			d() == fa->d() ? fa->rot() : rot();

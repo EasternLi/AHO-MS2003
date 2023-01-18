@@ -140,20 +140,31 @@ void Flow::link(size_t p) {
 	sons[e.j].push_back(p);
 	fa[p] = e.j;
 	
-	nodes[p].push_down();
+	// 论文二中证明了不会出现环，但要求我们及时剪掉值为零的节点与其父节点之间的边。
+	// 论文二中的做法是每次未耗尽叶节点的推流后，剪掉路径上最靠近根的节点。
+	// 本实现则在加边时保证路径上没有该种节点。
+	for (auto root = nodes[e.j].find_root();;) {
+		auto min = LCT::query_min(&nodes[e.j], root);
+		if (greater_than_zero(min.first))
+			break;
+		cut(min.second);
+		root = &nodes[min.second];
+	}
+	
+	nodes[p].push_down_from_root();
 	nodes[p].val.first = q(e_id);
-	nodes[p].push_up();
+	nodes[p].push_up_to_root();
 	nodes[p].fa = &nodes[e.j];
 }
 
 void Flow::cut(size_t p) {
 	fa[p] = -1;
 	nodes[p].cut();
-	nodes[p].push_down();
+	nodes[p].push_down_from_root();
 	
 	auto e_id = G[p][current_edge[p]];
 	add_flow_of_edge(e_id, q(e_id) - nodes[p].val.first);
 	
 	nodes[p].val.first = std::numeric_limits<Data>::infinity();
-	nodes[p].push_up();
+	nodes[p].push_up_to_root();
 }

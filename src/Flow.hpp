@@ -59,7 +59,7 @@ private:
 	std::vector<size_t> current_edge;
 	// 活跃节点的标号的集合。由于算法逻辑，活跃节点在 LCT 中为根。
 	UniqueQueue uq;
-	// 在 LCT 中的子节点集合。`tree_push`中剪边不会维护，故可能过多。
+	// 在 LCT 中的子节点集合。`tree_push, link`中剪边不会维护，故可能过多。
 	std::vector<std::vector<size_t>> sons;
 	// 在 LCT 中的父节点。-1 表该点为根。
 	std::vector<size_t> fa;

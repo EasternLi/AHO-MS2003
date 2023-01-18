@@ -34,7 +34,9 @@ namespace LCT {
 		void push_down();
 		
 		//直接标记下放
-		void go();
+		void push_down_from_root();
+		
+		void push_up_to_root();
 		
 		void rot();
 		
