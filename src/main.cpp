@@ -83,16 +83,45 @@ void test_3() {
 	assert(p.solve() == ans);
 	printf("ans = %lf,pass test 3\n",ans);
 }
+
+/*
+n = 4, m = 4
+node 1 : l = -2 , u = 0 , funtion =  ( 2 ) * x * x + ( 9 ) * x + ( 4 )
+node 2 : l = 1 , u = 2 , funtion =  ( 5 ) * x * x + ( -1 ) * x + ( 6 )
+node 3 : l = -1 , u = 0 , funtion =  ( 0 ) * x * x + ( 10 ) * x + ( 5 )
+node 4 : l = 0 , u = 0 , funtion =  ( 0 ) * x * x + ( 10 ) * x + ( 5 )
+edge 1 : from = 2, to = 4 , l = 0 , u = 7 , function =  ( 4 ) * x * x + ( 9 ) * x + ( -1 )
+edge 2 : from = 1, to = 4 , l = 2 , u = 9 , function =  ( 8 ) * x * x + ( 5 ) * x + ( -7 )
+edge 3 : from = 3, to = 4 , l = 5 , u = 9 , function =  ( 10 ) * x * x + ( 9 ) * x + ( 4 )
+edge 4 : from = 1, to = 2 , l = -2 , u = 1 , function =  ( 8 ) * x * x + ( 5 ) * x + ( 8 )
+
+answer:
+
+-1  -3.000000
+2  24.000000
+-1  -5.000000
+0  7.000000
+3  62.000000 3 >= 2 - 0 = 2
+2  35.000000 2 >= -1 - 0 = -1
+5  299.000000 5 >= -1 - 0 = -1
+-1  11.000000 -1 >= -1 - 2 = -3
+*/
+
 void test_4() {
 	ProblemSolver p(
-		2,
+		4,
 		{
 			{0,  0, [](int) { return 0; }},
-			{-4, 4, [](int x) { return x*x; }},
-			{-5, 3, [](int x) { return 3*x*x+4*x; }},
+			{-2, 0, [](int x) { return 2 * x * x +  9  * x + 4 ; }},
+			{1, 2, [](int x) { return  5 * x * x  -1  * x + 6 ; }},
+			{-1, 0, [](int x) { return  10 * x + 5 ; }},
+			{0, 0, [](int x) { return  10 * x + 5 ; }},
 		},
 		{
-			{{-3, 3, [](int x) { return 2*x*x-3*x; }}, 1, 2}
+			{{0, 7, [](int x) { return 4 * x * x + 9 * x -1 ; }}, 2, 4},
+			{{2, 9, [](int x) { return 8 * x * x + 5 * x -7 ; }}, 1, 4},
+			{{5, 9, [](int x) { return 10 * x * x + 9 * x + 4 ; }}, 3, 4},
+			{{-2, 1, [](int x) { return 8 * x * x + 5 * x + 8 ; }}, 1, 2},
 		}
 	);
 	Data ans = INFINITY;
