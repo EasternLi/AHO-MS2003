@@ -1,6 +1,8 @@
 #include "Flow.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
+#include <ranges>
 
 Flow::Flow(size_t n, Data M, int U, std::vector<ωLimit> limits)
 		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), sons(n + 1),
@@ -54,7 +56,7 @@ void Flow::push_all_admissible_edge() {
 	for (size_t e_id = 0; e_id < edges.size(); ++e_id) {
 		auto &e = edges[e_id];
 		auto _q = q(e_id);
-		if (greater_than_zero(_q)) {
+		if (greater_than_zero(_q) and greater_than_zero(-scaled_cost(e_id))) {
 			imbalances[e.i] -= _q;
 			imbalances[e.j] += _q;
 			add_flow_of_edge(e_id, _q);
@@ -80,7 +82,7 @@ void Flow::refine() {
 void Flow::choice_operator(size_t p) {
 	for (; current_edge[p] < G[p].size(); ++current_edge[p]) {
 		auto e_id = G[p][current_edge[p]];
-		if (greater_than_zero(q(e_id)))
+		if (greater_than_zero(q(e_id)) and greater_than_zero(-scaled_cost(e_id)))
 			return link(p), send(p);
 	}
 	update_scaling(p);
@@ -127,6 +129,15 @@ Data Flow::q(size_t e_id) {
 	if (t + 1 > e.u)return M - flows[e_id];
 	if (t < e.l)return 0;
 	return std::max(Data(0), e.fn(t+1) - e.fn(t) - flows[e_id]);
+}
+
+Data Flow::scaled_cost(size_t e_id) {
+	auto &e = edges[e_id];
+	auto right_slop = *std::ranges::partition_point(
+		std::views::iota(e.l, e.u),
+		[&](int x) { return e.fn(x+1) - e.fn(x) <= flows[e_id]; }
+	);
+	return right_slop - scaling[e.i] + scaling[e.j];
 }
 
 void Flow::add_flow_of_edge(size_t e_id, Data flow_add) {
