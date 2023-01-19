@@ -16,7 +16,7 @@ ProblemSolver::ProblemSolver(
 		assert(it.l <= it.u);
 	}
 	
-	for (auto &it: ωs) {
+	for (auto &it: this->ωs) {
 		assert(1 <= it.i and it.i <= n);
 		assert(1 <= it.j and it.j <= n);
 		assert(it.i != it.j);
