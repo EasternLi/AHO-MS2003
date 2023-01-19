@@ -3,6 +3,7 @@
 #include <cassert>
 #include <ranges>
 #include <utility>
+#include <iostream>
 
 bool greater_than_zero(Data x) {
 	return x > 1e-9;
