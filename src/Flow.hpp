@@ -11,6 +11,7 @@ public:
 	Flow(size_t n, Data M, int U, std::vector<ωLimit> limits);
 	
 	// 返回值即所求的环流最小费用。
+	// 在不存在合法解时，会求得超过 原问题在忽略μω关系下最大解 的解。（归功于 M 的存在）
 	// NOTE: 一个实例仅可调用一次。
 	Data min_cost();
 private:

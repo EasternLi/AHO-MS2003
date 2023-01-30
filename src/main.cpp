@@ -13,12 +13,15 @@ void test_4();
 
 void test_5();
 
+void test_6();
+
 int main() {
 	test_1();
 	test_2();
 	test_3();
 	test_4();
 	test_5();
+	test_6();
 }
 
 void test_1() {
@@ -30,7 +33,7 @@ void test_1() {
 		},
 		{}
 	);
-	assert(p.solve() == 1);
+	assert(*p.solve() == 1);
 	puts("pass test 1");
 }
 
@@ -55,7 +58,7 @@ void test_2() {
 			ans,
 			Data(-i + j + (k - 3) * (k - 3))
 		);
-	assert(p.solve() == ans);
+	assert(*p.solve() == ans);
 	puts("pass test 2");
 }
 
@@ -80,7 +83,7 @@ void test_3() {
 			ans,
 			Data(-i + j + (k + 3) * (k + 3))
 		);
-	assert(p.solve() == ans);
+	assert(*p.solve() == ans);
 	puts("pass test 3");
 }
 
@@ -118,7 +121,7 @@ void test_4() {
 			+ 2 * e2 * e2 +  8 * e2 + -2
 		);
 	}
-	assert(ans == p.solve());
+	assert(ans == *p.solve());
 	printf("ans = %lf, pass test 4\n", ans);
 }
 
@@ -159,6 +162,26 @@ void test_5() {
 			+  8 * e3 * e3 +  5 * e3 +  8
 		);
 	}
-	assert(ans == p.solve());
+	assert(ans == *p.solve());
 	printf("ans = %lf, pass test 5\n", ans);
+}
+
+#undef loop
+
+void test_6() {
+	ProblemSolver p(
+		3,
+		{
+			{0, 0, [](int) { return 0; }},
+			{0, 0, [](int) { return 0; }},
+			{0, 1, [](int) { return 0; }},
+			{0, 0, [](int) { return 0; }},
+		},
+		{
+			{{-1, -1, [](int) { return 0; }}, 1, 2},
+			{{+0, +0, [](int) { return 0; }}, 2, 3},
+		}
+	);
+	assert(not p.solve().has_value());
+	puts("ans donot exist, pass test 6");
 }
