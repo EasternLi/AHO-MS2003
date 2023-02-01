@@ -35,12 +35,9 @@ private:
 	// 如论文二 p15 第二段 case 2。
 	void update_scaling(size_t p);
 	
-	// 推流这些单位后，该边与其反向边均不再 admissible。
+	// 使该边不再 admissible 所需的最少推流。
 	// 如论文 (12a)。
 	Data q(size_t e_id);
-	
-	// 推无穷小的流时的单位费用。
-	Data scaled_cost(size_t e_id);
 	
 	// 在该边推`flow_add`单位流。
 	void add_flow_of_edge(size_t e_id, Data flow_add);
