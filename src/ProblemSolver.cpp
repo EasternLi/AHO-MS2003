@@ -1,6 +1,5 @@
 #include "ProblemSolver.hpp"
 #include "Flow.hpp"
-#include <cassert>
 #include <map>
 #include <ranges>
 #include <utility>
@@ -10,6 +9,17 @@ ProblemSolver::ProblemSolver(
 		std::vector<μLimit> μs,
 		std::vector<ωLimit> ωs
 ) : n(n), μs(μs), ωs(ωs) {
+	// 不再使整个程序崩溃，而是将数据置空。
+#define assert(condition)      \
+	do {                       \
+		if (not (condition)) { \
+			this->n = 0;       \
+			this->μs.clear();  \
+			this->ωs.clear();  \
+			return;            \
+		}                      \
+	} while (false)
+	
 	assert(n > 0);
 	assert(μs.size() == n + 1);
 	for (auto &it: μs | std::views::drop(1)) {
@@ -27,10 +37,18 @@ ProblemSolver::ProblemSolver(
 		it.l = μs[it.i].l - μs[it.j].u;
 		assert(it.l <= it.u);
 	}
+#undef assert
 }
 
 std::optional<Data> ProblemSolver::solve() {
-	auto limits = merge_limits();
+	if (n == 0)
+		return std::nullopt;
+	
+	auto _limits = merge_limits();
+	if (not _limits.has_value())
+		return std::nullopt;
+	
+	auto& limits = *_limits;
 	auto [valid_cost_max, M, U] = calc(limits);
 	
 	Flow flow(n, M, U, limits);
@@ -41,7 +59,7 @@ std::optional<Data> ProblemSolver::solve() {
 	return {min_cost};
 }
 
-std::vector<ωLimit> ProblemSolver::merge_limits() {
+std::optional<std::vector<ωLimit>> ProblemSolver::merge_limits() {
 	// 应论文 p956 右侧首段中的要求，合并无序对 (i,j) 相同的限制。
 	// 论文中该步骤在网络流部分，但该实现提前至这里。
 	// 此次 map 可改为 unorder_* 变种，也有办法避免键在值中重复。但不是热代码，不进行优化。
@@ -51,9 +69,11 @@ std::vector<ωLimit> ProblemSolver::merge_limits() {
 		if (it.i < it.j)
 			it.reverse();
 		// 去重。
-		if (auto p = mp.find({it.i, it.j}); p != mp.end())
-			p->second.merge(it);
-		else
+		if (auto p = mp.find({it.i, it.j}); p != mp.end()) {
+			bool err = p->second.merge(it);
+			if (err)
+				return std::nullopt;
+		} else
 			mp[{it.i, it.j}] = it;
 	}
 	
@@ -64,7 +84,7 @@ std::vector<ωLimit> ProblemSolver::merge_limits() {
 		ret.push_back(v);
 	for (size_t i = 1; i <= n; ++i)
 		ret.push_back({μs[i], i, 0});
-	return ret;
+	return {ret};
 }
 
 std::tuple<Data, Data, int> ProblemSolver::calc(const std::vector<ωLimit> &limits) {

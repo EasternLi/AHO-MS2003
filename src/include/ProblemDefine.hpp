@@ -40,5 +40,6 @@ private:
 	void reverse();
 	
 	// 用于合并两个限制，其中 i,j 分别相同。
-	void merge(const ωLimit &other);
+	// 返回值为真表示有错误发生，即两边共存时无解。
+	bool merge(const ωLimit &other);
 };

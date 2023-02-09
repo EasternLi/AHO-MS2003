@@ -34,7 +34,7 @@ void ωLimit::reverse() {
 	std::swap(i, j);
 }
 
-void ωLimit::merge(const ωLimit &other) {
+bool ωLimit::merge(const ωLimit &other) {
 	// [l, u] 取交集，fn 求和。
 	l  = std::max(l, other.l);
 	u  = std::min(u, other.u);
@@ -43,5 +43,5 @@ void ωLimit::merge(const ωLimit &other) {
 	};
 	assert(i == other.i);
 	assert(j == other.j);
-	assert(l <= u);
+	return not(l <= u);
 }

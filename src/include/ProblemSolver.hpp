@@ -19,7 +19,8 @@ public:
 	std::optional<Data> solve();
 private:
 	// 根据论文第二章 (6)(7) 中间段，构建网络并返回。
-	std::vector<ωLimit> merge_limits();
+	// 可能会发现部分无解的情况，此时返回值为空。
+	std::optional<std::vector<ωLimit>> merge_limits();
 	
 	// 对于边集计算三个值，分别为
 	// 1. valid_cost_max: 在忽略μ,ω关系下的最大解。用于检查最终答案是否合法。
