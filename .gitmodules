@@ -1,0 +1,3 @@
+[submodule "3rd/testa"]
+	path = 3rd/testa
+	url = https://github.com/TimeExceed/testa.git
