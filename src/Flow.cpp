@@ -153,20 +153,19 @@ void Flow::link(size_t p) {
 		root = &nodes[min.second];
 	}
 	
-	nodes[p].push_down_from_root();
+	nodes[p].access();
 	nodes[p].val.first = q(e_id);
-	nodes[p].push_up_to_root();
+	nodes[p].push_up();
 	nodes[p].fa = &nodes[e.j];
 }
 
 void Flow::cut(size_t p) {
 	fa[p] = -1;
 	nodes[p].cut();
-	nodes[p].push_down_from_root();
 	
 	auto e_id = G[p][current_edge[p]];
 	add_flow_of_edge(e_id, q(e_id) - nodes[p].val.first);
 	
 	nodes[p].val.first = std::numeric_limits<Data>::infinity();
-	nodes[p].push_up_to_root();
+	nodes[p].push_up();
 }
