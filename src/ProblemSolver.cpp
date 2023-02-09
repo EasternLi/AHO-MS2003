@@ -9,7 +9,7 @@ ProblemSolver::ProblemSolver(
 		size_t n,
 		std::vector<μLimit> μs,
 		std::vector<ωLimit> ωs
-) : n(n), μs(μs), ωs(ωs), valid_cost_max(0), M(1), U(0) {
+) : n(n), μs(μs), ωs(ωs) {
 	assert(n > 0);
 	assert(μs.size() == n + 1);
 	for (auto &it: μs | std::views::drop(1)) {
@@ -30,8 +30,12 @@ ProblemSolver::ProblemSolver(
 }
 
 std::optional<Data> ProblemSolver::solve() {
-	Flow flow(n, M, U, merge_limits());
+	auto limits = merge_limits();
+	auto [valid_cost_max, M, U] = calc(limits);
+	
+	Flow flow(n, M, U, limits);
 	auto min_cost = flow.min_cost();
+	
 	if (min_cost > valid_cost_max)
 		return std::nullopt;
 	return {min_cost};
@@ -52,7 +56,6 @@ std::vector<ωLimit> ProblemSolver::merge_limits() {
 		else
 			mp[{it.i, it.j}] = it;
 	}
-	ωs.clear();
 	
 	std::vector<ωLimit> ret;
 	ret.reserve(mp.size() + n);
@@ -61,13 +64,17 @@ std::vector<ωLimit> ProblemSolver::merge_limits() {
 		ret.push_back(v);
 	for (size_t i = 1; i <= n; ++i)
 		ret.push_back({μs[i], i, 0});
-	μs.clear();
-	
-	for (auto &it: ret) {
-		valid_cost_max += std::max(it.fn(it.l), it.fn(it.u));
-		M       += std::max(it.fn(it.l), it.fn(it.u)) - it.min();
-		U        = std::max(U, it.u - it.l);
-	}
-	
 	return ret;
+}
+
+std::tuple<Data, Data, int> ProblemSolver::calc(const std::vector<ωLimit> &limits) {
+	Data valid_cost_max = 0;
+	Data M              = 1;
+	int  U              = 0;
+	for(auto &it: limits) {
+		valid_cost_max += std::max(it.fn(it.l), it.fn(it.u));
+		M              += std::max(it.fn(it.l), it.fn(it.u)) - it.min();
+		U               = std::max(U, it.u - it.l);
+	}
+	return { valid_cost_max, M, U };
 }
