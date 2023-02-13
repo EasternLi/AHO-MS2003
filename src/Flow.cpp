@@ -150,7 +150,7 @@ void Flow::cut(size_t p) {
 	nodes[p].cut();
 	
 	auto e_id = G[p][current_edge[p]];
-	add_flow_of_edge(e_id, q(e_id) - nodes[p].get_val().first);
+	add_flow_of_edge(e_id, q(e_id) - nodes[p].get_val());
 	
 	nodes[p].set_val(std::numeric_limits<Data>::infinity());
 }

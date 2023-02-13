@@ -7,7 +7,8 @@
 
 void LCT::Node::init(Data _val) {
 	fa = ch[0] = ch[1] = nullptr;
-	val = min = {_val, this};
+	val = _val;
+	min = {val, this};
 	add = 0;
 }
 
@@ -32,7 +33,7 @@ void LCT::Node::cut() {
 	push_up();
 }
 
-const LCT::Node::Val &LCT::Node::get_val() {
+const Data &LCT::Node::get_val() {
 	if(not is_root())
 		access();
 	return val;
@@ -46,7 +47,7 @@ const LCT::Node::Val &LCT::Node::get_min_way_to_root() {
 void LCT::Node::set_val(Data _val) {
 	if(not is_root())
 		access();
-	val.first = _val;
+	val = _val;
 	push_up();
 }
 
@@ -56,7 +57,7 @@ void LCT::Node::add_val_way_to_root(Data d) {
 }
 
 void LCT::Node::push_up() {
-	min = val;
+	min = {val, this};
 	if (ch[0] && ch[0]->min.first <= min.first) min = ch[0]->min;
 	if (ch[1] && ch[1]->min.first <  min.first) min = ch[1]->min;
 }
@@ -73,7 +74,7 @@ bool LCT::Node::is_root() {
 }
 
 void LCT::Node::update_add(Data w) {
-	val.first += w;
+	val += w;
 	add += w;
 	min.first += w;
 }

@@ -18,10 +18,10 @@ namespace LCT {
 		void  set_fa(Node *_fa);
 		void  cut();
 		
-		const Val &get_val();
-		const Val &get_min_way_to_root();
-		void       set_val(Data _val);
-		void       add_val_way_to_root(Data d);
+		const Data &get_val();
+		const Val  &get_min_way_to_root();
+		void        set_val(Data _val);
+		void        add_val_way_to_root(Data d);
 		
 		Node() = default;
 		Node(const Node&) = delete;
@@ -50,7 +50,7 @@ namespace LCT {
 		Node *access();
 		
 		Node *fa, *ch[2];
-		Val min, val;
-		Data add;
+		Val  min;
+		Data val, add;
 	};
 }
