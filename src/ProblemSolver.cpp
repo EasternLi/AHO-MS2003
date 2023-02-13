@@ -9,18 +9,18 @@ ProblemSolver::ProblemSolver(
 		std::vector<μLimit> μs,
 		std::vector<ωLimit> ωs
 ) : n(n), μs(μs), ωs(ωs) {
-	// 不再使整个程序崩溃，而是将数据置空。
+	// 不再使整个程序崩溃，而是将数据置非法。
 #define assert(condition)      \
 	do {                       \
 		if (not (condition)) { \
-			this->n = 0;       \
+			this->n = -1;      \
 			this->μs.clear();  \
 			this->ωs.clear();  \
 			return;            \
 		}                      \
 	} while (false)
 	
-	assert(n > 0);
+	assert(n >= 0);
 	assert(μs.size() == n + 1);
 	for (auto &it: μs | std::views::drop(1)) {
 		assert(it.l <= it.u);
@@ -41,7 +41,7 @@ ProblemSolver::ProblemSolver(
 }
 
 std::optional<Data> ProblemSolver::solve() {
-	if (n == 0)
+	if (n == size_t(-1))
 		return std::nullopt;
 	
 	auto _limits = merge_limits();
