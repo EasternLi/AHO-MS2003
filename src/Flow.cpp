@@ -3,8 +3,7 @@
 #include <limits>
 
 Flow::Flow(size_t n, Data M, int U, std::vector<ωLimit> limits)
-		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), sons(n + 1),
-		  fa(n + 1, -1) {
+		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), fa(n + 1, -1) {
 	edges.reserve(limits.size() * 2);
 	flows.resize (limits.size() * 2);
 	G.resize(n + 1);
@@ -46,7 +45,6 @@ void Flow::initialization() {
 	// std::fill(imbalances.begin(), imbalances.end(), 0);
 	std::fill(current_edge.begin(), current_edge.end(), 0);
 	// uq.clear();
-	for (auto &item: sons)item.clear();
 	// std::fill(fa.begin(), fa.end(), -1);
 }
 
@@ -110,10 +108,11 @@ void Flow::send(size_t p) {
 
 void Flow::update_scaling(size_t p) {
 	// 如论文二 p15 第二段最后一句话。
-	for (auto cut_p: sons[p])
+	for (auto e_id : G[p]) {
+		auto cut_p = edges[e_id].j;
 		if (fa[cut_p] == p)
 			cut(cut_p);
-	sons[p].clear();
+	}
 	// 在`cut`之后修改。因其需要之前的`q`，其又需要之前的`scaling`。
 	scaling[p] += ε / 2;
 	current_edge[p] = 0;
@@ -138,7 +137,6 @@ void Flow::add_flow_of_edge(size_t e_id, Data flow_add) {
 void Flow::link(size_t p) {
 	auto e_id = G[p][current_edge[p]];
 	auto &e = edges[e_id];
-	sons[e.j].push_back(p);
 	fa[p] = e.j;
 	
 	nodes[p].set_val(q(e_id));

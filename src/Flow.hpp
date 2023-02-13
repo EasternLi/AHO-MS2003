@@ -53,15 +53,13 @@ private:
 	Data ε;
 	int U;
 	
-	// 下面六个成员变量在迭代时使用，每次均由`initialization`函数初始化。
+	// 下面五个成员变量在迭代时使用，每次均由`initialization`函数初始化。
 	std::vector<LCT::Node> nodes; // 各节点对应的 LCT 中的节点。
 	std::vector<Data> imbalances; // 即 $b_f$。
 	// 各节点的当前边的 e_id。若某节点在 LCT 中非根，该边即为连向父节点的边。
 	std::vector<size_t> current_edge;
 	// 活跃节点的标号的集合。由于算法逻辑，活跃节点在 LCT 中为根。
 	UniqueQueue uq;
-	// 在 LCT 中的子节点集合。`tree_push, link`中剪边不会维护，故可能过多。
-	std::vector<std::vector<size_t>> sons;
 	// 在 LCT 中的父节点。-1 表该点为根。
 	std::vector<size_t> fa;
 	
