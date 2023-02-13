@@ -1,10 +1,6 @@
-# swap file
-*~
-*.kate-swp
-# IDE/build dir
-/.idea
-/.vscode
+.*
+!/.gitignore
+!/.gitmodules
+# build dir
 /build
 /cmake-build*
-/.cache
-/Testing
