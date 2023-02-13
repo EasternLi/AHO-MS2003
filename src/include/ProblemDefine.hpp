@@ -24,9 +24,12 @@ class ProblemSolver;
 
 class Flow;
 
+class Test;
+
 struct ωLimit : μLimit {
 	friend ProblemSolver;
 	friend Flow;
+	friend Test;
 	
 	size_t i, j;
 private:
