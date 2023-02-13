@@ -4,49 +4,62 @@
 #include "LCT.hpp"
 #include <algorithm>
 #include <limits>
+#include <cassert>
 
-LCT::Node *LCT::null = []() {
+static LCT::Node *null = []() {
 	auto p = new LCT::Node;
-	p->clear({
-		std::numeric_limits<Data>::infinity(),
-		std::numeric_limits<int>::max()
-	});
+	p->init(std::numeric_limits<Data>::infinity());
 	return p;
 }();
 
-void LCT::add(LCT::Node *x, LCT::Node *y, Data w) {
-	x->access();
-	for (x = null; y != null; x = y, y = y->fa) {
-		y->splay();
-		if (y->fa == null) {
-			y->ch[1]->update_add(w);
-			x->update_add(w);
-			y->val.first += w;
-			y->push_up();
-			return;
-		}
-		y->setc(x, 1);
-		y->push_up();
-	}
-}
-
-LCT::Node::Val LCT::query_min(LCT::Node *x, LCT::Node *y) {
-	x->access();
-	for (x = null; y != null; x = y, y = y->fa) {
-		y->splay();
-		if (y->fa == null)
-			return std::min({y->val, y->ch[1]->min, x->min});
-		y->setc(x, 1);
-		y->push_up();
-	}
-	std::abort();
-}
-
-void LCT::Node::clear(Val _val) {
+void LCT::Node::init(Data _val) {
 	fa = ch[0] = ch[1] = null;
-	val = min = _val;
-	rev = 0;
+	val = min = {_val, this};
 	add = 0;
+}
+
+LCT::Node *LCT::Node::find_root() {
+	Node *x = access();
+	while (x->ch[0] != null)
+		x = x->ch[0];
+	return x;
+}
+
+void LCT::Node::set_fa(Node *_fa) {
+	splay();
+	assert(fa == null);
+	fa = _fa;
+}
+
+void LCT::Node::cut() {
+	access();
+	assert(ch[0]);
+	ch[0]->fa = null;
+	ch[0] = null;
+	push_up();
+}
+
+const LCT::Node::Val &LCT::Node::get_val() {
+	if(not is_root())
+		access();
+	return val;
+}
+
+const LCT::Node::Val &LCT::Node::get_min_way_to_root() {
+	access();
+	return min;
+}
+
+void LCT::Node::set_val(Data _val) {
+	if(not is_root())
+		access();
+	val.first = _val;
+	push_up();
+}
+
+void LCT::Node::add_val_way_to_root(Data d) {
+	access();
+	update_add(d);
 }
 
 void LCT::Node::push_up() { min = std::min({val, ch[0]->min, ch[1]->min}); }
@@ -62,13 +75,6 @@ bool LCT::Node::is_root() {
 	return fa == null || (fa->ch[0] != this && fa->ch[1] != this);
 }
 
-void LCT::Node::flip() {
-	if (this == null)
-		return;
-	std::swap(ch[0], ch[1]);
-	rev ^= 1;
-}
-
 void LCT::Node::update_add(Data w) {
 	if (this == null)
 		return;
@@ -78,11 +84,6 @@ void LCT::Node::update_add(Data w) {
 }
 
 void LCT::Node::push_down() {
-	if (rev) {
-		ch[0]->flip();
-		ch[1]->flip();
-		rev = 0;
-	}
 	if (add) {
 		ch[0]->update_add(add);
 		ch[1]->update_add(add);
@@ -94,12 +95,6 @@ void LCT::Node::push_down_from_root() {
 	if (!is_root())
 		fa->push_down_from_root();
 	push_down();
-}
-
-void LCT::Node::push_up_to_root() {
-	push_up();
-	if (!is_root())
-		fa->push_up_to_root();
 }
 
 void LCT::Node::rot() {
@@ -131,30 +126,4 @@ LCT::Node *LCT::Node::access() {
 		p->push_up();
 	}
 	return splay();
-}
-
-LCT::Node *LCT::Node::find_root() {
-	Node *x = access();
-	while (x->push_down(), x->ch[0] != null)
-		x = x->ch[0];
-	return x;
-}
-
-void LCT::Node::make_root() { access()->flip(); }
-
-void LCT::Node::cut() {
-	access();
-	ch[0]->fa = null;
-	ch[0] = null;
-	push_up();
-}
-
-void LCT::Node::cut(LCT::Node *x) {
-	x->make_root();
-	cut();
-}
-
-void LCT::Node::link(LCT::Node *x) {
-	make_root();
-	fa = x;
 }

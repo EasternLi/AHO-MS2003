@@ -42,7 +42,7 @@ Data Flow::min_cost() {
 void Flow::initialization() {
 	// 部分变量在迭代前后不变。
 	for (size_t i = 0; i <= n; ++i)
-		nodes[i].clear({std::numeric_limits<Data>::infinity(), i});
+		nodes[i].init(std::numeric_limits<Data>::infinity());
 	// std::fill(imbalances.begin(), imbalances.end(), 0);
 	std::fill(current_edge.begin(), current_edge.end(), 0);
 	// uq.clear();
@@ -87,25 +87,24 @@ void Flow::choice_operator(size_t p) {
 }
 
 void Flow::send(size_t p) {
-	auto root = nodes[p].find_root();
+	auto root_id = nodes[p].find_root() - nodes.data();
 	// 从 p 点推 x 单位流至根节点。
 	auto push = [&](Data x) {
-		auto root_id = root - nodes.data();
-		LCT::add(&nodes[p], root, -x);
+		nodes[p].add_val_way_to_root(-x);
 		imbalances[p] -= x;
 		imbalances[root_id] += x;
 		if (greater_than_zero(imbalances[root_id]))
 			uq.push(root_id);
 	};
-	while (&nodes[p] != root) {
-		auto min = LCT::query_min(&nodes[p], root);
+	while (p != root_id) {
+		auto min = nodes[p].get_min_way_to_root();
 		if (imbalances[p] <= min.first) {
 			push(imbalances[p]);
 			return;
 		}
 		push(min.first);
-		cut(min.second);
-		root = &nodes[min.second];
+		root_id = min.second - nodes.data();
+		cut(root_id);
 	}
 }
 
@@ -145,18 +144,15 @@ void Flow::link(size_t p) {
 	// 论文二中证明了不会出现环，但要求我们及时剪掉值为零的节点与其父节点之间的边。
 	// 论文二中的做法是每次未耗尽叶节点的推流后，剪掉路径上最靠近根的节点。
 	// 本实现则在加边时保证路径上没有该种节点。
-	for (auto root = nodes[e.j].find_root();;) {
-		auto min = LCT::query_min(&nodes[e.j], root);
+	for (;;) {
+		auto min = nodes[e.j].get_min_way_to_root();
 		if (greater_than_zero(min.first))
 			break;
-		cut(min.second);
-		root = &nodes[min.second];
+		cut(min.second - nodes.data());
 	}
 	
-	nodes[p].access();
-	nodes[p].val.first = q(e_id);
-	nodes[p].push_up();
-	nodes[p].fa = &nodes[e.j];
+	nodes[p].set_val(q(e_id));
+	nodes[p].set_fa(&nodes[e.j]);
 }
 
 void Flow::cut(size_t p) {
@@ -164,8 +160,7 @@ void Flow::cut(size_t p) {
 	nodes[p].cut();
 	
 	auto e_id = G[p][current_edge[p]];
-	add_flow_of_edge(e_id, q(e_id) - nodes[p].val.first);
+	add_flow_of_edge(e_id, q(e_id) - nodes[p].get_val().first);
 	
-	nodes[p].val.first = std::numeric_limits<Data>::infinity();
-	nodes[p].push_up();
+	nodes[p].set_val(std::numeric_limits<Data>::infinity());
 }
