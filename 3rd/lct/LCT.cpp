@@ -57,8 +57,8 @@ void LCT::Node::add_val_way_to_root(Data d) {
 
 void LCT::Node::push_up() {
 	min = val;
-	if (ch[0]) min = std::min(min, ch[0]->min);
-	if (ch[1]) min = std::min(min, ch[1]->min);
+	if (ch[0] && ch[0]->min.first <= min.first) min = ch[0]->min;
+	if (ch[1] && ch[1]->min.first <  min.first) min = ch[1]->min;
 }
 
 void LCT::Node::setc(LCT::Node *p, int d) {

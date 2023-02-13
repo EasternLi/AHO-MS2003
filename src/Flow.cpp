@@ -141,16 +141,6 @@ void Flow::link(size_t p) {
 	sons[e.j].push_back(p);
 	fa[p] = e.j;
 	
-	// 论文二中证明了不会出现环，但要求我们及时剪掉值为零的节点与其父节点之间的边。
-	// 论文二中的做法是每次未耗尽叶节点的推流后，剪掉路径上最靠近根的节点。
-	// 本实现则在加边时保证路径上没有该种节点。
-	for (;;) {
-		auto min = nodes[e.j].get_min_way_to_root();
-		if (greater_than_zero(min.first))
-			break;
-		cut(min.second - nodes.data());
-	}
-	
 	nodes[p].set_val(q(e_id));
 	nodes[p].set_fa(&nodes[e.j]);
 }
