@@ -11,7 +11,9 @@ foreach(text_name IN ITEMS
 	mini_graph_2
 	mini_graph_3
 	mini_graph_4
-	no_solution
+	no_solution_1
+	no_solution_2
+	no_solution_3
 )
 	add_test(NAME ${text_name} COMMAND test_exe ${text_name})
 endforeach()

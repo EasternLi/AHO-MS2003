@@ -188,7 +188,42 @@ TESTA_DEF_EQ_1(
 );
 
 TESTA_DEF_EQ_1(
-	no_solution,
+	no_solution_1,
+	Test::bf_solve,
+	Test::fast_solve,
+	(G{
+		2,
+		{
+			{},
+			{0, 0, [](int) { return 0; }},
+			{0, 0, [](int) { return 0; }},
+		},
+		{
+			{{-1, -1, [](int) { return 0; }}, 1, 2},
+		}
+	})
+);
+
+TESTA_DEF_EQ_1(
+	no_solution_2,
+	Test::bf_solve,
+	Test::fast_solve,
+	(G{
+		2,
+		{
+			{},
+			{0, 3, [](int) { return 0; }},
+			{0, 3, [](int) { return 0; }},
+		},
+		{
+			{{ 0,  1, [](int) { return 0; }}, 1, 2},
+			{{-3, -2, [](int) { return 0; }}, 2, 1},
+		}
+	})
+);
+
+TESTA_DEF_EQ_1(
+	no_solution_3,
 	Test::bf_solve,
 	Test::fast_solve,
 	(G{
