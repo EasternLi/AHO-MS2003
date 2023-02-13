@@ -52,21 +52,21 @@ void Flow::push_all_admissible_edge() {
 	for (size_t e_id = 0; e_id < edges.size(); ++e_id) {
 		auto &e = edges[e_id];
 		auto _q = q(e_id);
-		if (greater_than_zero(_q)) {
+		if (_q > 0) {
 			imbalances[e.i] -= _q;
 			imbalances[e.j] += _q;
 			add_flow_of_edge(e_id, _q);
 		}
 	}
 	for (size_t i = 0; i <= n; ++i)
-		if (greater_than_zero(imbalances[i]))
+		if (imbalances[i] > 0)
 			uq.push(i);
 }
 
 void Flow::refine() {
 	while (not uq.empty()) {
 		choice_operator(uq.front());
-		if (not greater_than_zero(imbalances[uq.front()]))
+		if (imbalances[uq.front()] == 0)
 			uq.pop();
 	}
 	// 如论文二 p15 第三段最后一句话。
@@ -78,7 +78,7 @@ void Flow::refine() {
 void Flow::choice_operator(size_t p) {
 	for (; current_edge[p] < G[p].size(); ++current_edge[p]) {
 		auto e_id = G[p][current_edge[p]];
-		if (greater_than_zero(q(e_id)))
+		if (q(e_id) > 0)
 			return link(p), send(p);
 	}
 	update_scaling(p);
@@ -91,7 +91,7 @@ void Flow::send(size_t p) {
 		nodes[p].add_val_way_to_root(-x);
 		imbalances[p] -= x;
 		imbalances[root_id] += x;
-		if (greater_than_zero(imbalances[root_id]))
+		if (imbalances[root_id] > 0)
 			uq.push(root_id);
 	};
 	while (p != root_id) {

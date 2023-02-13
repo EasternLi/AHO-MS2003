@@ -4,10 +4,6 @@
 #include <ranges>
 #include <utility>
 
-bool greater_than_zero(Data x) {
-	return x > 1e-9;
-}
-
 void ωLimit::pre_processing() {
 	// 在参数取该值时，函数值达到最小值。
 	auto min_point = *std::ranges::partition_point(

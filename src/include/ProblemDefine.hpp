@@ -4,14 +4,12 @@
 #include <functional>
 
 // 该文件定义了问题中的值的类型。
-// 实数类型即 Data 的值，还需一个`greater_than_zero`函数。用于 F, B 的返回值。
+// 实数类型即 Data 的值。用于 F, B 的返回值。
 // 整数类型直接使用了 int。用于 l, u。
 // 标号类型直接使用了 size_t。用于 i, j。
 // 以及用于描述 μ, ω 各自限制的两个结构体。
 
 using Data = double;
-
-bool greater_than_zero(Data x);
 
 using Fn = std::function<Data(int)>;
 
