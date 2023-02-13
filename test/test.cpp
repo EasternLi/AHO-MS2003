@@ -188,6 +188,31 @@ TESTA_DEF_EQ_1(
 );
 
 TESTA_DEF_EQ_1(
+	mini_graph_5,
+	Test::bf_solve,
+	Test::fast_solve,
+	(G{
+		5,
+		{
+			{},
+			{ -8,   0, [](int x) { return 5 * x * x +  2 * x +  1; }},
+			{ -6,   3, [](int x) { return 4 * x * x + -8 * x +  4; }},
+			{-10, -10, [](int x) { return 5 * x * x +  9 * x + -4; }},
+			{  4,   5, [](int x) { return 8 * x * x +  1 * x +  0; }},
+			{ -3,   0, [](int x) { return 1 * x * x +  6 * x +  5; }},
+		},
+		{
+			{{10, 12, [](int x) { return 5 * x * x +  4 * x + -2; }}, 4, 3},
+			{{10, 15, [](int x) { return 7 * x * x +  0 * x + -5; }}, 3, 2},
+			{{17, 20, [](int x) { return 1 * x * x + -3 * x +  0; }}, 3, 5},
+			{{12, 18, [](int x) { return 0 * x * x + 10 * x + 10; }}, 5, 1},
+			{{17, 19, [](int x) { return 1 * x * x + -7 * x +  6; }}, 3, 1},
+			{{13, 20, [](int x) { return 3 * x * x + -3 * x + -8; }}, 4, 5},
+		}
+	})
+);
+
+TESTA_DEF_EQ_1(
 	no_solution_1,
 	Test::bf_solve,
 	Test::fast_solve,
