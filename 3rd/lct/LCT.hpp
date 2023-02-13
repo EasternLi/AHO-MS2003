@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include "ProblemDefine.hpp"
 #include <cstddef>
 #include <utility>
+
+using Data = double;
 
 namespace LCT {
 	struct Node {
