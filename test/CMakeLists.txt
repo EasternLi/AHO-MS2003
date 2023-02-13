@@ -3,7 +3,7 @@ add_executable(test_exe test.cpp)
 target_link_libraries(test_exe testa)
 target_link_libraries(test_exe aho_ms2003)
 
-foreach(text_name IN ITEMS
+foreach(test_name IN ITEMS
 	empty_graph
 	single_node_graph_1
 	single_node_graph_2
@@ -16,5 +16,5 @@ foreach(text_name IN ITEMS
 	no_solution_2
 	no_solution_3
 )
-	add_test(NAME ${text_name} COMMAND test_exe ${text_name})
+	add_test(NAME ${test_name} COMMAND test_exe ${test_name})
 endforeach()
