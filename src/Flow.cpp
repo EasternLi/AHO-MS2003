@@ -96,7 +96,7 @@ void Flow::send(size_t p) {
 	};
 	while (p != root_id) {
 		auto min = nodes[p].get_min_way_to_root();
-		if (imbalances[p] <= min.first) {
+		if (imbalances[p] < min.first) {
 			push(imbalances[p]);
 			return;
 		}
