@@ -6,6 +6,8 @@
 
 // 函数命名和符号优先采用 LCT 优化论文中的，其在接下来的注释中称为论文二。
 
+namespace AHO_MS2003 {
+
 class Flow {
 public:
 	Flow(size_t n, Data M, int U, std::vector<ωLimit> limits);
@@ -68,3 +70,5 @@ private:
 	std::vector<std::vector<size_t>> G; // 邻接表存图。
 	std::vector<Data> scaling;          // 即 $p$。
 };
+
+}

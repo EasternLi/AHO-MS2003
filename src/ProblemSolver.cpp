@@ -4,10 +4,10 @@
 #include <ranges>
 #include <utility>
 
-ProblemSolver::ProblemSolver(
+AHO_MS2003::ProblemSolver::ProblemSolver(
 		size_t n,
-		std::vector<μLimit> μs,
-		std::vector<ωLimit> ωs
+		std::vector<AHO_MS2003::μLimit> μs,
+		std::vector<AHO_MS2003::ωLimit> ωs
 ) : n(n), μs(μs), ωs(ωs) {
 	// 不再使整个程序崩溃，而是将数据置非法。
 #define assert(condition)      \
@@ -40,7 +40,7 @@ ProblemSolver::ProblemSolver(
 #undef assert
 }
 
-std::optional<Data> ProblemSolver::solve() {
+std::optional<Data> AHO_MS2003::ProblemSolver::solve() {
 	if (n == size_t(-1))
 		return std::nullopt;
 	
@@ -51,7 +51,7 @@ std::optional<Data> ProblemSolver::solve() {
 	auto& limits = *_limits;
 	auto [valid_cost_max, M, U] = calc(limits);
 	
-	Flow flow(n, M, U, limits);
+	AHO_MS2003::Flow flow(n, M, U, limits);
 	auto min_cost = flow.min_cost();
 	
 	if (min_cost > valid_cost_max)
@@ -59,11 +59,11 @@ std::optional<Data> ProblemSolver::solve() {
 	return {min_cost};
 }
 
-std::optional<std::vector<ωLimit>> ProblemSolver::merge_limits() {
+std::optional<std::vector<AHO_MS2003::ωLimit>> AHO_MS2003::ProblemSolver::merge_limits() {
 	// 应论文 p956 右侧首段中的要求，合并无序对 (i,j) 相同的限制。
 	// 论文中该步骤在网络流部分，但该实现提前至这里。
 	// 此次 map 可改为 unorder_* 变种，也有办法避免键在值中重复。但不是热代码，不进行优化。
-	std::map<std::pair<size_t, size_t>, ωLimit> mp;
+	std::map<std::pair<size_t, size_t>, AHO_MS2003::ωLimit> mp;
 	for (auto &it: ωs) {
 		// 规定 (i,j) 顺序。
 		if (it.i < it.j)
@@ -77,7 +77,7 @@ std::optional<std::vector<ωLimit>> ProblemSolver::merge_limits() {
 			mp[{it.i, it.j}] = it;
 	}
 	
-	std::vector<ωLimit> ret;
+	std::vector<AHO_MS2003::ωLimit> ret;
 	ret.reserve(mp.size() + n);
 	
 	for (auto &[k, v]: mp)
@@ -87,7 +87,7 @@ std::optional<std::vector<ωLimit>> ProblemSolver::merge_limits() {
 	return {ret};
 }
 
-std::tuple<Data, Data, int> ProblemSolver::calc(const std::vector<ωLimit> &limits) {
+std::tuple<Data, Data, int> AHO_MS2003::ProblemSolver::calc(const std::vector<AHO_MS2003::ωLimit> &limits) {
 	Data valid_cost_max = 0;
 	Data M              = 1;
 	int  U              = 0;

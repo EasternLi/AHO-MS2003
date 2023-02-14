@@ -2,10 +2,12 @@
 #include <ProblemSolver.hpp>
 #include <sstream>
 
+namespace AHO_MS2003 {
+
 struct G {
 	size_t n;
-	std::vector<μLimit> μs;
-	std::vector<ωLimit> ωs;
+	std::vector<AHO_MS2003::μLimit> μs;
+	std::vector<AHO_MS2003::ωLimit> ωs;
 	
 	void prettyPrint(std::string& out) const {
 		std::stringstream ss;
@@ -67,10 +69,14 @@ public:
 	}
 	static std::optional<Data> fast_solve(const G& g) {
 		auto& [n, μs, ωs] = g;
-		ProblemSolver ps(n, μs, ωs);
+		AHO_MS2003::ProblemSolver ps(n, μs, ωs);
 		return ps.solve();
 	}
 };
+
+}
+
+using namespace AHO_MS2003;
 
 TESTA_DEF_EQ_1(
 	empty_graph,

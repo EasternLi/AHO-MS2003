@@ -13,6 +13,8 @@ using Data = double;
 
 using Fn = std::function<Data(int)>;
 
+namespace AHO_MS2003 {
+
 struct μLimit {
 	int l, u;
 	Fn fn; // NOTE: 需为凸函数。
@@ -44,3 +46,5 @@ private:
 	// 返回值为真表示有错误发生，即两边共存时无解。
 	bool merge(const ωLimit &other);
 };
+
+}

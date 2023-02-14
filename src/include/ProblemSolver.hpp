@@ -5,6 +5,8 @@
 #include <optional>
 #include <vector>
 
+namespace AHO_MS2003 {
+
 class ProblemSolver {
 public:
 	// μs[0] 会被忽略。
@@ -33,3 +35,5 @@ private:
 	std::vector<μLimit> μs;
 	std::vector<ωLimit> ωs;
 };
+
+}

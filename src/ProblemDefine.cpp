@@ -4,7 +4,7 @@
 #include <ranges>
 #include <utility>
 
-void ωLimit::pre_processing() {
+void AHO_MS2003::ωLimit::pre_processing() {
 	// 在参数取该值时，函数值达到最小值。
 	auto min_point = *std::ranges::partition_point(
 		std::views::iota(l, u),
@@ -15,7 +15,7 @@ void ωLimit::pre_processing() {
 	};
 }
 
-Data ωLimit::min() const {
+Data AHO_MS2003::ωLimit::min() const {
 	// 在参数取该值时，函数值达到最小值。
 	auto min_point = *std::ranges::partition_point(
 		std::views::iota(l, u),
@@ -24,13 +24,13 @@ Data ωLimit::min() const {
 	return fn(min_point);
 }
 
-void ωLimit::reverse() {
+void AHO_MS2003::ωLimit::reverse() {
 	std::tie(l, u) = std::tuple(-u, -l);
 	fn             = [fn(fn)](int x) { return fn(-x); };
 	std::swap(i, j);
 }
 
-bool ωLimit::merge(const ωLimit &other) {
+bool AHO_MS2003::ωLimit::merge(const AHO_MS2003::ωLimit &other) {
 	// [l, u] 取交集，fn 求和。
 	l  = std::max(l, other.l);
 	u  = std::min(u, other.u);
