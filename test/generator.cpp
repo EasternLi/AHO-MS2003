@@ -49,7 +49,7 @@ Graph TinyGen(
 	for (int i = 1; i <= n; i++) {
 		auto l = rnd.next(node_limit.first, node_limit.second);
 		auto u = rnd.next(node_limit.first, node_limit.second);
-		if (l < u) std::swap(l, u);
+		if (l > u) std::swap(l, u);
 		nodes.push_back({l, u, RandF(fun_limit)});
 	}
 	
@@ -57,8 +57,8 @@ Graph TinyGen(
 	for (auto [i, j] : graph_gen.GetEdge()) {
 		auto l = rnd.next(edge_limit.first, edge_limit.second);
 		auto u = rnd.next(edge_limit.first, edge_limit.second);
-		if (l < u) std::swap(l, u);
-		edges.push_back({{l, u, RandF(fun_limit)}, size_t(i), size_t(j)});
+		if (l > u) std::swap(l, u);
+		edges.push_back({{l, u, RandF(fun_limit)}, size_t(i + 1), size_t(j + 1)});
 	}
 	
 	std::string s;
