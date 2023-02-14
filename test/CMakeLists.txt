@@ -18,3 +18,8 @@ foreach(test_name IN ITEMS
 )
 	add_test(NAME ${test_name} COMMAND test_exe ${test_name})
 endforeach()
+
+# random compare test
+add_executable(randomTest test_compare_with_golden.cpp)
+TARGET_LINK_LIBRARIES(randomTest testa brute_force_src testa aho_ms2003 problem_src generator_src)
+target_include_directories(randomTest PUBLIC ../src ../test/golden_impl ../3rd)
