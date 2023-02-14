@@ -95,14 +95,3 @@ Graph TinyGen(
 	g.info = s;
 	return g;
 }
-		
-Graph TinyGen(
-	int n,
-	int mlimit,
-	bool multi_edge,
-	std::pair<int, int> node_limit,
-	std::pair<int, int> edge_limit,
-	std::pair<int, int> fun_limit
-) {
-	return TinyGen(n, mlimit, multi_edge, node_limit, edge_limit, fun_limit, 0);
-}
