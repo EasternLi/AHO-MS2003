@@ -94,11 +94,11 @@ void LCT::Node::push_down_from_root() {
 
 void LCT::Node::rot() {
 	Node *f = fa, *ff = fa->fa;
-	int c = d();
+	int c = d(), cc = (ff&&fa->d());
 	f->setc(ch[!c], c);
 	this->setc(f, !c);
-	if (ff && ff->ch[c = fa->d()] == f)
-		ff->setc(this, c);
+	if (ff && ff->ch[cc] == f)
+		ff->setc(this, cc);
 	else
 		this->fa = ff;
 	f->push_up();
