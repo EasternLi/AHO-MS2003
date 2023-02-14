@@ -2,7 +2,6 @@
 //! in 3.5.7
 
 #include "LCT.hpp"
-#include <algorithm>
 #include <cassert>
 
 void LCT::Node::init(Data _val) {

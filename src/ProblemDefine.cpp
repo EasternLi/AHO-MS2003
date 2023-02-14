@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cassert>
 #include <ranges>
-#include <utility>
 
 void AHO_MS2003::ωLimit::pre_processing() {
 	// 在参数取该值时，函数值达到最小值。
