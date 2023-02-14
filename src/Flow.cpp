@@ -1,23 +1,22 @@
 #include "Flow.hpp"
 #include <cmath>
 #include <limits>
+#include <ranges>
 
-AHO_MS2003::Flow::Flow(size_t n, Data M, int U, std::vector<ωLimit> limits)
-		: n(n), M(M), ε(U), U(U), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), fa(n + 1, -1) {
-	edges.reserve(limits.size() * 2);
-	flows.resize (limits.size() * 2);
+AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_)
+		: n(n_), M(M_), ε(U_), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), fa(n + 1, -1),
+		edges(std::move(limits_)) {
+	edges.resize(edges.size() * 2);
+	flows.resize(edges.size());
+	for (auto i : std::views::iota(0ul, edges.size() / 2) | std::views::reverse) {
+		edges[i * 2 + 1] = edges[i * 2] = edges[i];
+		edges[i * 2 + 1].reverse();
+	}
+	
 	G.resize(n + 1);
 	scaling.resize(n + 1);
-	
-	for (auto edge: limits) {
-		G[edge.i].push_back(edges.size());
-		edges.push_back(edge);
-		
-		edge.reverse();
-		
-		G[edge.i].push_back(edges.size());
-		edges.push_back(edge);
-	}
+	for (auto e_id : std::views::iota(0ul, edges.size()))
+		G[edges[e_id].i].push_back(e_id);
 }
 
 Data AHO_MS2003::Flow::min_cost() {
@@ -85,7 +84,7 @@ void AHO_MS2003::Flow::choice_operator(size_t p) {
 }
 
 void AHO_MS2003::Flow::send(size_t p) {
-	auto root_id = nodes[p].find_root() - nodes.data();
+	size_t root_id = nodes[p].find_root() - nodes.data();
 	// 从 p 点推 x 单位流至根节点。
 	auto push = [&](Data x) {
 		nodes[p].add_val_way_to_root(-x);
@@ -118,11 +117,11 @@ void AHO_MS2003::Flow::update_scaling(size_t p) {
 	current_edge[p] = 0;
 }
 
-Data AHO_MS2003::Flow::q(size_t e_id) {
+Data AHO_MS2003::Flow::q(size_t e_id) const {
 	auto &e = edges[e_id];
 	// 论文中该值为  ⌊...⌋，但  ⌈...⌉-1 同样满足要求。
 	// 且其在 ... 为 [l,u] 中的整数时避免了对拉伸后价格为零的部分流量的推流。
-	int t = std::ceil(scaling[e.i] - scaling[e.j]) - 1;
+	int t = std::ceil(scaling[e.i] - scaling[e.j] - 1);
 	// 下面两个条件语句起到了论文第一章假设二的作用。
 	if (t + 1 > e.u)return M - flows[e_id];
 	if (t < e.l)return 0;

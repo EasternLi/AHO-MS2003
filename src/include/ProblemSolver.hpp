@@ -9,20 +9,20 @@ namespace AHO_MS2003 {
 
 class ProblemSolver {
 public:
-	// μs[0] 会被忽略。
+	// μs_[0] 会被忽略。
 	ProblemSolver(
-			size_t n,
-			std::vector<μLimit> μs,
-			std::vector<ωLimit> ωs
+			size_t n_,
+			std::vector<μLimit> μs_,
+			std::vector<ωLimit> ωs_
 	);
 	
 	// 返回值即所求的最小值。
 	// 在无合法解（因l,u的限制）时返回值为空。
-	std::optional<Data> solve();
+	[[nodiscard]] std::optional<Data> solve() const;
 private:
 	// 根据论文第二章 (6)(7) 中间段，构建网络并返回。
 	// 可能会发现部分无解的情况，此时返回值为空。
-	std::optional<std::vector<ωLimit>> merge_limits();
+	[[nodiscard]] std::optional<std::vector<ωLimit>> merge_limits() const;
 	
 	// 对于边集计算三个值，分别为
 	// 1. valid_cost_max: 在忽略μ,ω关系下的最大解。用于检查最终答案是否合法。

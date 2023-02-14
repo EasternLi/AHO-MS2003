@@ -10,7 +10,7 @@ namespace AHO_MS2003 {
 
 class Flow {
 public:
-	Flow(size_t n, Data M, int U, std::vector<ωLimit> limits);
+	Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_);
 	
 	// 返回值即所求的环流最小费用。
 	// 在不存在合法解时，会求得超过 原问题在忽略μω关系下最大解 的解。（归功于 M 的存在）
@@ -39,7 +39,7 @@ private:
 	
 	// 使该边不再 admissible 所需的最少推流。
 	// 如论文 (12a)。
-	Data q(size_t e_id);
+	[[nodiscard]] Data q(size_t e_id) const;
 	
 	// 在该边推`flow_add`单位流。
 	void add_flow_of_edge(size_t e_id, Data flow_add);
@@ -53,7 +53,6 @@ private:
 	size_t n;
 	Data M;
 	Data ε;
-	int U;
 	
 	// 下面五个成员变量在迭代时使用，每次均由`initialization`函数初始化。
 	std::vector<LCT::Node> nodes; // 各节点对应的 LCT 中的节点。

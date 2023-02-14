@@ -37,7 +37,7 @@ private:
 	void pre_processing();
 	
 	// min(fn(l..=u))
-	Data min() const;
+	[[nodiscard]] Data min() const;
 	
 	// 用于反转 i,j。
 	void reverse();

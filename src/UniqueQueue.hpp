@@ -8,15 +8,15 @@ namespace AHO_MS2003 {
 
 class UniqueQueue {
 public:
-	UniqueQueue(size_t n);
+	explicit UniqueQueue(size_t n);
 	
 	void push(size_t x);
 	
-	size_t front();
+	[[nodiscard]] size_t front() const;
 	
 	void pop();
 	
-	bool empty();
+	[[nodiscard]] bool empty() const;
 	
 	void clear();
 

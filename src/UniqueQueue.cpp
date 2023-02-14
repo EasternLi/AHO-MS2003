@@ -8,14 +8,14 @@ void AHO_MS2003::UniqueQueue::push(size_t x) {
 	queue.push(x);
 }
 
-size_t AHO_MS2003::UniqueQueue::front() { return queue.front(); }
+size_t AHO_MS2003::UniqueQueue::front() const { return queue.front(); }
 
 void AHO_MS2003::UniqueQueue::pop() {
 	is_in_queue[queue.front()] = false;
 	queue.pop();
 }
 
-bool AHO_MS2003::UniqueQueue::empty() { return queue.empty(); }
+bool AHO_MS2003::UniqueQueue::empty() const { return queue.empty(); }
 
 void AHO_MS2003::UniqueQueue::clear() {
 	queue = {};

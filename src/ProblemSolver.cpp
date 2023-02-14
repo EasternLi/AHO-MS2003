@@ -5,17 +5,17 @@
 #include <utility>
 
 AHO_MS2003::ProblemSolver::ProblemSolver(
-		size_t n,
-		std::vector<AHO_MS2003::μLimit> μs,
-		std::vector<AHO_MS2003::ωLimit> ωs
-) : n(n), μs(μs), ωs(ωs) {
+		size_t n_,
+		std::vector<AHO_MS2003::μLimit> μs_,
+		std::vector<AHO_MS2003::ωLimit> ωs_
+) : n(n_), μs(std::move(μs_)), ωs(std::move(ωs_)) {
 	// 不再使整个程序崩溃，而是将数据置非法。
 #define assert(condition)      \
 	do {                       \
 		if (not (condition)) { \
-			this->n = -1;      \
-			this->μs.clear();  \
-			this->ωs.clear();  \
+			n = -1;            \
+			μs.clear();        \
+			ωs.clear();        \
 			return;            \
 		}                      \
 	} while (false)
@@ -26,7 +26,7 @@ AHO_MS2003::ProblemSolver::ProblemSolver(
 		assert(it.l <= it.u);
 	}
 	
-	for (auto &it: this->ωs) {
+	for (auto &it: ωs) {
 		assert(1 <= it.i and it.i <= n);
 		assert(1 <= it.j and it.j <= n);
 		assert(it.i != it.j);
@@ -40,7 +40,7 @@ AHO_MS2003::ProblemSolver::ProblemSolver(
 #undef assert
 }
 
-std::optional<Data> AHO_MS2003::ProblemSolver::solve() {
+std::optional<Data> AHO_MS2003::ProblemSolver::solve() const {
 	if (n == size_t(-1))
 		return std::nullopt;
 	
@@ -59,12 +59,12 @@ std::optional<Data> AHO_MS2003::ProblemSolver::solve() {
 	return {min_cost};
 }
 
-std::optional<std::vector<AHO_MS2003::ωLimit>> AHO_MS2003::ProblemSolver::merge_limits() {
+std::optional<std::vector<AHO_MS2003::ωLimit>> AHO_MS2003::ProblemSolver::merge_limits() const {
 	// 应论文 p956 右侧首段中的要求，合并无序对 (i,j) 相同的限制。
 	// 论文中该步骤在网络流部分，但该实现提前至这里。
 	// 此次 map 可改为 unorder_* 变种，也有办法避免键在值中重复。但不是热代码，不进行优化。
 	std::map<std::pair<size_t, size_t>, AHO_MS2003::ωLimit> mp;
-	for (auto &it: ωs) {
+	for (auto it: ωs) {
 		// 规定 (i,j) 顺序。
 		if (it.i < it.j)
 			it.reverse();
