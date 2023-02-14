@@ -4,3 +4,5 @@
 # build dir
 /build
 /cmake-build*
+# test log dir
+/test_results
