@@ -6,21 +6,21 @@
 #include "testlib.h"
 #include "gen.h"
 
-thread_local static std::queue<std::tuple<int, int, int>> fun;
+thread_local static std::queue<std::tuple<double, double, double>> fun;
 
 static std::function<Data(int)> RandF(std::pair<int,int> fun_limit) {
 	auto [l, r] = fun_limit;
-	int a = rnd.next(std::max(0, l), std::max(0, r));
-	int b = rnd.next(l, r);
-	int c = rnd.next(l, r);
+	double a = rnd.next(4 * std::max(0, l), 4 * std::max(0, r)) / 4.0;
+	double b = rnd.next(4 * l, 4 * r) / 4.0;
+	double c = rnd.next(4 * l, 4 * r) / 4.0;
 	fun.push({a, b, c});
 	return [a, b, c](int x) { return a * x * x + b * x + c; };
 }
 
 static std::string PrintFunction() {
-	static char buf[80];
+	static char buf[90];
 	auto [a, b, c] = fun.front(); fun.pop();
-	sprintf(buf, "[](int x) { return %3d * x * x + %3d * x + %3d; }", a, b, c);
+	sprintf(buf, "[](int x) { return %.2lf * x * x + %.2lf * x + %.2lf; }", a, b, c);
 	return buf;
 }
 		
