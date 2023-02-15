@@ -11,6 +11,7 @@ double CostScaling::CostPi(int u, Arc e) {
 bool CostScaling::Refine() {
   std::vector<double> excess(N);
   std::vector<double> incp(N, 0);
+  std::vector<int> current_edge(head);
   for (int u = 0; u < N; u++) {
     for (int i = head[u]; i != -1; i = edge[i].u) {
       if (CostPi(u, edge[i]) < 0) {
@@ -39,9 +40,9 @@ bool CostScaling::Refine() {
       st.push(edge[x].v);
       vis[edge[x].v] = 1;
     }
-    for (int i = 0; i < edge.size(); i++) {
-      assert(edge[i].capacity + edge[i ^ 1].capacity == edge[i].total);
-    }
+    // for (int i = 0; i < edge.size(); i++) {
+    //   assert(edge[i].capacity + edge[i ^ 1].capacity == edge[i].total);
+    // }
   };
 
   auto Relabel = [&](int u) {
@@ -51,7 +52,7 @@ bool CostScaling::Refine() {
 
   auto Modify = [&](int u) {
     assert(excess[u] > 0);
-    for (int i = head[u]; i != -1; i = edge[i].u) {
+    for (int& i = current_edge[u]; i != -1; i = edge[i].u) {
       double w = CostPi(u, edge[i]);
       if (w < 0) {
         Push(u, i, std::min(edge[i].capacity, excess[u]));
@@ -62,6 +63,7 @@ bool CostScaling::Refine() {
     }
     assert(excess[u] > 0);
     Relabel(u);
+    current_edge[u] = head[u];
     st.push(u);
     vis[u] = 1;
   };

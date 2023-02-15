@@ -284,21 +284,21 @@ void SmallGen2(const string &name, function<void(const Graph&)> cs) {
 }
 
 void HugeGen1(const string &name, function<void(const Graph&)> cs) {
-	int n = (name.substr(0, 7) == "Compare" ? 100 : 1);
+	int n = (name.substr(0, 7) == "Compare" ? 1000 : 10);
 	for(int i = 1; i <= n; i++) {
 		cs(TinyGen(50, 100, 0, { -20, 20 }, { -20, 60 }, { -100, 100 }, i));
 	}
 }
 
 void HugeGen2(const string &name, function<void(const Graph&)> cs) {
-	int n = (name.substr(0, 7) == "Compare" ? 100 : 1);
+	int n = (name.substr(0, 7) == "Compare" ? 1000 : 10);
 	for(int i = 1; i <= n; i++) {
 		cs(TinyGen(50, 200, 1, { -20, 20 }, { -20, 60 }, { -100, 100 }, i));
 	}
 }
 
 void HugeGen3(const string &name, function<void(const Graph&)> cs) {
-	int n = (name.substr(0, 7) == "Compare" ? 10 : 1);
+	int n = (name.substr(0, 7) == "Compare" ? 100 : 10);
 	for(int i = 1; i <= n; i++) {
 		cs(TinyGen(100, 300, 1, { -40, 40 }, { -40, 40 }, { -100, 100 }, i));
 	}
