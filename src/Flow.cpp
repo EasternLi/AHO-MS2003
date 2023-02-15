@@ -1,11 +1,15 @@
 #include "Flow.hpp"
+#include <bit>
+#include <cassert>
 #include <cmath>
 #include <limits>
 #include <ranges>
 
 AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_)
-		: n(n_), M(M_), ε(U_), nodes(n + 1), imbalances(n + 1), current_edge(n + 1), uq(n + 1), fa(n + 1, -1),
-		edges(std::move(limits_)) {
+		: n(n_), M(M_), ε(std::bit_ceil(2 * (n + 1) * U_)), nodes(n + 1), imbalances(n + 1),
+		current_edge(n + 1), uq(n + 1), fa(n + 1, -1), edges(std::move(limits_))
+{
+	assert(std::has_single_bit<unsigned int>(ε) && (ε / 2 / int(n + 1) >= U_));
 	edges.resize(edges.size() * 2);
 	flows.resize(edges.size());
 	for (auto i : std::views::iota(0ul, edges.size() / 2) | std::views::reverse) {
@@ -20,7 +24,7 @@ AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_)
 }
 
 Data AHO_MS2003::Flow::min_cost() {
-	for (; ε * (n + 1) >= Data(1); ε /= 2) {
+	for (; ε >= 2; ε /= 2) {
 		initialization();
 		push_all_admissible_edge();
 		refine();
@@ -119,9 +123,12 @@ void AHO_MS2003::Flow::update_scaling(size_t p) {
 
 Data AHO_MS2003::Flow::q(size_t e_id) const {
 	auto &e = edges[e_id];
+	auto ceil_div = [](int num, int denom) {
+		return num / denom + (num % denom > 0);
+	};
 	// 论文中该值为  ⌊...⌋，但  ⌈...⌉-1 同样满足要求。
 	// 且其在 ... 为 [l,u] 中的整数时避免了对拉伸后价格为零的部分流量的推流。
-	int t = std::ceil(scaling[e.i] - scaling[e.j] - 1);
+	int t = ceil_div(scaling[e.i] - scaling[e.j], 2 * (n + 1)) - 1;
 	// 下面两个条件语句起到了论文第一章假设二的作用。
 	if (t + 1 > e.u)return M - flows[e_id];
 	if (t < e.l)return 0;

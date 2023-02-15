@@ -51,8 +51,8 @@ private:
 	void cut(size_t p);
 	
 	size_t n;
-	Data M;
-	Data ε;
+	Data   M;
+	int    ε; // 实际上 <_>/2/(n+1) 才是真正的值。一直到算法结束，其均为 2 的幂。这使其避免了非整数运算。
 	
 	// 下面五个成员变量在迭代时使用，每次均由`initialization`函数初始化。
 	std::vector<LCT::Node> nodes; // 各节点对应的 LCT 中的节点。
@@ -67,7 +67,7 @@ private:
 	std::vector<ωLimit> edges; // 边集。
 	std::vector<Data> flows;   // 在`edges`中相同下标的边的已流流量。
 	std::vector<std::vector<size_t>> G; // 邻接表存图。
-	std::vector<Data> scaling;          // 即 $p$。
+	std::vector<int> scaling;           // 即 $p$。同 ε，<_>/2/(n+1) 才是真正的值。
 };
 
 }

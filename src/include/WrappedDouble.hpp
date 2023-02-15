@@ -44,14 +44,6 @@ public:
 };
 
 template<double eps>
-double ::std::ceil(const WrappedDouble<eps>& x) {
-	double maybe = ::std::floor(x.m_value);
-	if (x == maybe)
-		return ::std::floor(x.m_value);
-	return ::std::ceil(x.m_value);
-}
-
-template<double eps>
 bool ::std::isnan(const WrappedDouble<eps>& x)
 	{ return ::std::isnan(x.m_value); }
 
