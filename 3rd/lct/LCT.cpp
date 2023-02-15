@@ -79,7 +79,7 @@ void LCT::Node::update_add(Data w) {
 }
 
 void LCT::Node::push_down() {
-	if (add) {
+	if (add != 0) {
 		if (ch[0]) ch[0]->update_add(add);
 		if (ch[1]) ch[1]->update_add(add);
 		add = 0;

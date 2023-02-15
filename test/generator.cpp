@@ -8,7 +8,7 @@
 
 thread_local static std::queue<std::tuple<int, int, int>> fun;
 
-static std::function<double(int)> RandF(std::pair<int,int> fun_limit) {
+static std::function<Data(int)> RandF(std::pair<int,int> fun_limit) {
 	auto [l, r] = fun_limit;
 	int a = rnd.next(std::max(0, l), std::max(0, r));
 	int b = rnd.next(l, r);

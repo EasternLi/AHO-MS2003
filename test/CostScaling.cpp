@@ -5,7 +5,7 @@
 #include <stack>
 
 double CostScaling::CostPi(int u, Arc e) {
-  return e.cost - p[u] + p[e.v];
+  return double(e.cost) - p[u] + p[e.v];
 };
 
 bool CostScaling::Refine() {
@@ -30,7 +30,7 @@ bool CostScaling::Refine() {
     }
   }
 
-  auto Push = [&](int u, int x, int flow) {
+  auto Push = [&](int u, int x, double flow) {
     edge[x].capacity -= flow;
     edge[x ^ 1].capacity += flow;
     excess[u] -= flow;
@@ -69,7 +69,7 @@ bool CostScaling::Refine() {
     int u = st.top();
     st.pop();
     vis[u] = 0;
-    if (incp[u] > 3 * N * epsilon) {
+    if (incp[u] > epsilon * 3 * N) {
       return false;
     }
     Modify(u);
@@ -93,7 +93,7 @@ void CostScaling::Init(std::vector<InputEdge> arc) {
   head.resize(N, -1);
   len = -1;
   for (auto e : arc) {
-    epsilon = std::max(epsilon, e.cost * 1.0);
+    epsilon = std::max<double>(epsilon, e.cost);
     total_cost += e.capacity * e.cost;
     AddEdge(e.u, e.v, e.cost, e.capacity, e.capacity, -1);
     AddEdge(e.v, e.u, -e.cost, 0, e.capacity, e.id);

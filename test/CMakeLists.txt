@@ -1,4 +1,4 @@
-add_executable(test_exe test.cpp Graph.cpp generator.cpp CostScaling.cpp MediumSolver.cpp)
+add_executable(test_exe test.cpp Graph.cpp generator.cpp CostScaling.cpp SimpleSolver.cpp)
 
 target_link_libraries(test_exe testa)
 target_link_libraries(test_exe aho_ms2003)

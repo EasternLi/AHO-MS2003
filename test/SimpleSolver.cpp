@@ -1,4 +1,4 @@
-#include "MediumSolver.hpp"
+#include "SimpleSolver.hpp"
 #include "CostScaling.hpp"
 #include <cmath>
 
@@ -8,11 +8,11 @@
 #define v_ j
 #define F_ fn
 
-MediumSolver::MediumSolver(Graph g){
+SimpleSolver::SimpleSolver(Graph g){
   G=g;
 }
 
-double MediumSolver::bij(std::function<double(int)> f, int l, int r, int x) {
+double SimpleSolver::bij(std::function<double(int)> f, int l, int r, int x) {
   if (x < l) {
     return -M;
   }
@@ -22,7 +22,7 @@ double MediumSolver::bij(std::function<double(int)> f, int l, int r, int x) {
   return f(x + 1) - f(x);
 }
 
-double MediumSolver::Solve() {
+double SimpleSolver::Solve() {
   std::vector<std::function<double(int)>> functions;
   std::vector<std::pair<int, int>> limi;
   std::vector<InputEdge> edge;
