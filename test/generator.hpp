@@ -5,7 +5,7 @@
 
 Graph TinyGen(
 	int  n,
-	int  mlimit,
+	std::pair<int, int> mlimit,
 	bool multi_edge,
 	std::pair<int, int> node_limit,
 	std::pair<int, int> edge_limit,
@@ -15,7 +15,7 @@ Graph TinyGen(
 
 Graph TinyGen(
 	int  n,
-	int  mlimit,
+	std::pair<int, int> mlimit,
 	bool multi_edge,
 	std::pair<int, int> node_limit,
 	std::pair<int, int> edge_limit,

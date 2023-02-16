@@ -26,17 +26,18 @@ static std::string PrintFunction() {
 		
 Graph TinyGen(
 	int n,
-	int mlimit,
+	std::pair<int, int> mlimit,
 	bool multi_edge,
 	std::pair<int, int> node_limit,
 	std::pair<int, int> edge_limit,
 	std::pair<int, int> fun_limit,
 	int seed
 ) {
+	mlimit.first=std::max(1,mlimit.first);
 	if (!multi_edge) {
-		mlimit = std::min(mlimit, n*(n-1)/2);
+		mlimit.second = std::min(mlimit.second, n*(n-1)/2);
 	}
-	int m = rnd.next(n - 1, mlimit);
+	int m = rnd.next(mlimit.first, mlimit.second);
 	
 	Generator::Graph graph_gen;
 	rnd.setSeed(seed);
@@ -98,7 +99,7 @@ Graph TinyGen(
 		
 Graph TinyGen(
 	int n,
-	int mlimit,
+	std::pair<int, int> mlimit,
 	bool multi_edge,
 	std::pair<int, int> node_limit,
 	std::pair<int, int> edge_limit,
