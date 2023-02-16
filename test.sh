@@ -3,7 +3,7 @@
 set -e
 
 build=cmake-build-release
-if not test -d $build; then
+if [ ! -d $build ]; then
 	cmake -B $build -D CMAKE_BUILD_TYPE=Release
 fi
 
