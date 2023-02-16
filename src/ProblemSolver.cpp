@@ -1,7 +1,6 @@
 #include "ProblemSolver.hpp"
 #include "Flow.hpp"
 #include <map>
-#include <ranges>
 #include <utility>
 
 AHO_MS2003::ProblemSolver::ProblemSolver(
@@ -22,8 +21,8 @@ AHO_MS2003::ProblemSolver::ProblemSolver(
 	
 	assert(n >= 0);
 	assert(Mus.size() == n + 1);
-	for (auto &it: Mus | std::views::drop(1)) {
-		assert(it.l <= it.u);
+	for (size_t i = 1; i <= n; ++i) {
+		assert(Mus[i].l <= Mus[i].u);
 	}
 	
 	for (auto &it: Omegas) {

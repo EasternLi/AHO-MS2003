@@ -3,23 +3,28 @@
 #include <cassert>
 #include <cmath>
 #include <limits>
-#include <ranges>
 
 AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<OmegaLimit> limits_)
-		: n(n_), M(M_), epsilon(std::bit_ceil(2 * (n + 1) * U_)), nodes(n + 1), imbalances(n + 1),
+		: n(n_), M(M_), epsilon(1), nodes(n + 1), imbalances(n + 1),
 		  current_edge(n + 1), uq(n + 1), fa(n + 1, -1), edges(std::move(limits_))
 {
-	assert(std::has_single_bit<unsigned int>(epsilon) && (epsilon / 2 / int(n + 1) >= U_));
+	while (epsilon < 2 * int(n + 1) * U_) {
+		epsilon *= 2;
+		assert(epsilon != 0);
+	}
+	assert((epsilon / 2 / int(n + 1) >= U_));
+	
 	edges.resize(edges.size() * 2);
 	flows.resize(edges.size());
-	for (auto i : std::views::iota(0ul, edges.size() / 2) | std::views::reverse) {
-		edges[i * 2 + 1] = edges[i * 2] = edges[i];
-		edges[i * 2 + 1].reverse();
+	for (size_t i = edges.size(); i; ) {
+		i -= 2;
+		edges[i + 1] = edges[i] = edges[i / 2];
+		edges[i + 1].reverse();
 	}
 	
 	G.resize(n + 1);
 	scaling.resize(n + 1);
-	for (auto e_id : std::views::iota(0ul, edges.size()))
+	for (size_t e_id = 0; e_id < edges.size(); ++e_id)
 		G[edges[e_id].i].push_back(e_id);
 }
 
