@@ -18,7 +18,7 @@ using Fn = std::function<Data(int)>;
 
 namespace AHO_MS2003 {
 
-struct μLimit {
+struct MuLimit {
 	int l, u;
 	Fn fn; // NOTE: 需为凸函数。
 };
@@ -29,7 +29,7 @@ class Flow;
 
 class Test;
 
-struct ωLimit : μLimit {
+struct OmegaLimit : MuLimit {
 	friend ProblemSolver;
 	friend Flow;
 	friend Test;
@@ -47,7 +47,7 @@ private:
 	
 	// 用于合并两个限制，其中 i,j 分别相同。
 	// 返回值为真表示有错误发生，即两边共存时无解。
-	bool merge(const ωLimit &other);
+	bool merge(const OmegaLimit &other);
 };
 
 }

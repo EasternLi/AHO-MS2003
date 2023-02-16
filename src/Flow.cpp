@@ -5,11 +5,11 @@
 #include <limits>
 #include <ranges>
 
-AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_)
-		: n(n_), M(M_), ε(std::bit_ceil(2 * (n + 1) * U_)), nodes(n + 1), imbalances(n + 1),
-		current_edge(n + 1), uq(n + 1), fa(n + 1, -1), edges(std::move(limits_))
+AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<OmegaLimit> limits_)
+		: n(n_), M(M_), epsilon(std::bit_ceil(2 * (n + 1) * U_)), nodes(n + 1), imbalances(n + 1),
+		  current_edge(n + 1), uq(n + 1), fa(n + 1, -1), edges(std::move(limits_))
 {
-	assert(std::has_single_bit<unsigned int>(ε) && (ε / 2 / int(n + 1) >= U_));
+	assert(std::has_single_bit<unsigned int>(epsilon) && (epsilon / 2 / int(n + 1) >= U_));
 	edges.resize(edges.size() * 2);
 	flows.resize(edges.size());
 	for (auto i : std::views::iota(0ul, edges.size() / 2) | std::views::reverse) {
@@ -24,7 +24,7 @@ AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_)
 }
 
 Data AHO_MS2003::Flow::min_cost() {
-	for (; ε >= 2; ε /= 2) {
+	for (; epsilon >= 2; epsilon /= 2) {
 		initialization();
 		push_all_admissible_edge();
 		refine();
@@ -117,7 +117,7 @@ void AHO_MS2003::Flow::update_scaling(size_t p) {
 			cut(cut_p);
 	}
 	// 在`cut`之后修改。因其需要之前的`q`，其又需要之前的`scaling`。
-	scaling[p] += ε / 2;
+	scaling[p] += epsilon / 2;
 	current_edge[p] = 0;
 }
 

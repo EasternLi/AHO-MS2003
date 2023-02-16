@@ -11,16 +11,16 @@ class Test {
 public:
 	// Complexity: O(U^n * m)
 	static std::optional<Data> bf_solve(const Graph& g) {
-		auto& [n, _m, μs, _ωs, _info] = g;
-		auto ωs = _ωs;
+		auto& [n, _m, Mus, _Omegas, _info] = g;
+		auto Omegas = _Omegas;
 		Data ret = INFINITY;
 		
-		for(auto& it : ωs) it.pre_processing();
+		for(auto& it : Omegas) it.pre_processing();
 		
 		std::vector<int> v(n + 1);
 		std::function<void(size_t, Data)> dfs = [&](size_t p, Data now_sum) {
 			if (p == n) {
-				for (auto& it : ωs) {
+				for (auto& it : Omegas) {
 					int x = v[it.i] - v[it.j];
 					if (x > it.u)
 						return;
@@ -30,8 +30,8 @@ public:
 				return;
 			}
 			p++;
-			for (auto &i = v[p] = μs[p].l; i <= μs[p].u; i++)
-				dfs(p, now_sum + μs[p].fn(i));
+			for (auto &i = v[p] = Mus[p].l; i <= Mus[p].u; i++)
+				dfs(p, now_sum + Mus[p].fn(i));
 		};
 		dfs(0, 0);
 		
@@ -49,8 +49,8 @@ public:
 		return {ret};
 	}
 	static std::optional<Data> fast_solve(const Graph& g) {
-		auto& [n, _m, μs, ωs, _info] = g;
-		AHO_MS2003::ProblemSolver ps(n, μs, ωs);
+		auto& [n, _m, Mus, Omegas, _info] = g;
+		AHO_MS2003::ProblemSolver ps(n, Mus, Omegas);
 		return ps.solve();
 	}
 };

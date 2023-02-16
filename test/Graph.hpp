@@ -4,8 +4,8 @@
 #include <string>
 #include "ProblemDefine.hpp"
 
-using Node = AHO_MS2003::μLimit;
-using Edge = AHO_MS2003::ωLimit;
+using Node = AHO_MS2003::MuLimit;
+using Edge = AHO_MS2003::OmegaLimit;
 
 class Graph{
 public:

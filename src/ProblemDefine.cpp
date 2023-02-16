@@ -3,7 +3,7 @@
 #include <cassert>
 #include <ranges>
 
-void AHO_MS2003::ωLimit::pre_processing() {
+void AHO_MS2003::OmegaLimit::pre_processing() {
 	// 在参数取该值时，函数值达到最小值。
 	auto min_point = *std::ranges::partition_point(
 		std::views::iota(l, u),
@@ -14,7 +14,7 @@ void AHO_MS2003::ωLimit::pre_processing() {
 	};
 }
 
-Data AHO_MS2003::ωLimit::min() const {
+Data AHO_MS2003::OmegaLimit::min() const {
 	// 在参数取该值时，函数值达到最小值。
 	auto min_point = *std::ranges::partition_point(
 		std::views::iota(l, u),
@@ -23,13 +23,13 @@ Data AHO_MS2003::ωLimit::min() const {
 	return fn(min_point);
 }
 
-void AHO_MS2003::ωLimit::reverse() {
+void AHO_MS2003::OmegaLimit::reverse() {
 	std::tie(l, u) = std::tuple(-u, -l);
 	fn             = [fn(fn)](int x) { return fn(-x); };
 	std::swap(i, j);
 }
 
-bool AHO_MS2003::ωLimit::merge(const AHO_MS2003::ωLimit &other) {
+bool AHO_MS2003::OmegaLimit::merge(const AHO_MS2003::OmegaLimit &other) {
 	// [l, u] 取交集，fn 求和。
 	l  = std::max(l, other.l);
 	u  = std::min(u, other.u);

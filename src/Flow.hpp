@@ -10,7 +10,7 @@ namespace AHO_MS2003 {
 
 class Flow {
 public:
-	Flow(size_t n_, Data M_, int U_, std::vector<ωLimit> limits_);
+	Flow(size_t n_, Data M_, int U_, std::vector<OmegaLimit> limits_);
 	
 	// 返回值即所求的环流最小费用。
 	// 在不存在合法解时，会求得超过 原问题在忽略μω关系下最大解 的解。（归功于 M 的存在）
@@ -52,7 +52,7 @@ private:
 	
 	size_t n;
 	Data   M;
-	int    ε; // 实际上 <_>/2/(n+1) 才是真正的值。一直到算法结束，其均为 2 的幂。这使其避免了非整数运算。
+	int    epsilon; // 实际上 <_>/2/(n+1) 才是真正的值。一直到算法结束，其均为 2 的幂。这使其避免了非整数运算。
 	
 	// 下面五个成员变量在迭代时使用，每次均由`initialization`函数初始化。
 	std::vector<LCT::Node> nodes; // 各节点对应的 LCT 中的节点。
@@ -64,10 +64,10 @@ private:
 	// 在 LCT 中的父节点。-1 表该点为根。
 	std::vector<size_t> fa;
 	
-	std::vector<ωLimit> edges; // 边集。
-	std::vector<Data> flows;   // 在`edges`中相同下标的边的已流流量。
+	std::vector<OmegaLimit> edges; // 边集。
+	std::vector<Data> flows;       // 在`edges`中相同下标的边的已流流量。
 	std::vector<std::vector<size_t>> G; // 邻接表存图。
-	std::vector<int> scaling;           // 即 $p$。同 ε，<_>/2/(n+1) 才是真正的值。
+	std::vector<int> scaling;           // 即 $p$。同 epsilon，<_>/2/(n+1) 才是真正的值。
 };
 
 }
