@@ -5,6 +5,8 @@
 #include <queue>
 #include "testlib.h"
 #include "gen.h"
+#include <sys/time.h>
+
 
 thread_local static std::queue<std::tuple<int, int, int>> fun;
 
@@ -13,7 +15,7 @@ static std::function<double(int)> RandF(std::pair<int,int> fun_limit) {
 	int a = rnd.next(std::max(0, l), std::max(0, r));
 	int b = rnd.next(l, r);
 	int c = rnd.next(l, r);
-	fun.push({a, b, c});
+	//fun.push({a, b, c});
 	return [a, b, c](int x) { return a * x * x + b * x + c; };
 }
 
@@ -33,6 +35,8 @@ Graph TinyGen(
 	std::pair<int, int> fun_limit,
 	int seed
 ) {
+	struct timeval sTime, eTime;
+	gettimeofday(&sTime, NULL);
 	mlimit.first=std::max(1,mlimit.first);
 	if (!multi_edge) {
 		mlimit.second = std::min(mlimit.second, n*(n-1)/2);
@@ -62,38 +66,40 @@ Graph TinyGen(
 		edges.push_back({{l, u, RandF(fun_limit)}, size_t(i + 1), size_t(j + 1)});
 	}
 	
-	std::string s;
-	s += "{\n"; {
-		s += "\t"; s += std::to_string(n); s += "\n";
+	// std::string s;
+	// s += "{\n"; {
+	// 	s += "\t"; s += std::to_string(n); s += "\n";
 		
-		s += "\t{\n\t\t{}\n"; for (int i = 1; i <= n; i++) {
-			s += "\t\t{";
-			s += std::to_string(nodes[i].l);
-			s += ", ";
-			s += std::to_string(nodes[i].u);
-			s += ", ";
-			s += PrintFunction();
-			s += "}\n";
-		} s += "\t}\n";
+	// 	s += "\t{\n\t\t{}\n"; for (int i = 1; i <= n; i++) {
+	// 		s += "\t\t{";
+	// 		s += std::to_string(nodes[i].l);
+	// 		s += ", ";
+	// 		s += std::to_string(nodes[i].u);
+	// 		s += ", ";
+	// 		s += PrintFunction();
+	// 		s += "}\n";
+	// 	} s += "\t}\n";
 		
-		s += "\t{\n"; for (int i = 0; i < m; i++) {
-			s += "\t\t{{";
-			s += std::to_string(edges[i].l);
-			s += ", ";
-			s += std::to_string(edges[i].u);
-			s += ", ";
-			s += PrintFunction();
-			s += "}";
-			s += ", ";
-			s += std::to_string(edges[i].i);
-			s += ", ";
-			s += std::to_string(edges[i].j);
-			s += "}\n";
-		} s += "\t}\n";
-	} s += "}\n";
+	// 	s += "\t{\n"; for (int i = 0; i < m; i++) {
+	// 		s += "\t\t{{";
+	// 		s += std::to_string(edges[i].l);
+	// 		s += ", ";
+	// 		s += std::to_string(edges[i].u);
+	// 		s += ", ";
+	// 		s += PrintFunction();
+	// 		s += "}";
+	// 		s += ", ";
+	// 		s += std::to_string(edges[i].i);
+	// 		s += ", ";
+	// 		s += std::to_string(edges[i].j);
+	// 		s += "}\n";
+	// 	} s += "\t}\n";
+	// } s += "}\n";
 	
 	Graph g(n, m, nodes, edges);
-	g.info = s;
+	gettimeofday(&eTime, NULL);
+	printf("%.6lf\n",(eTime.tv_sec-sTime.tv_sec)*1.0+(eTime.tv_usec-sTime.tv_usec)/1000000.0);
+	//g.info = s;
 	return g;
 }
 		

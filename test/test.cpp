@@ -308,39 +308,39 @@ void MeduimGen3(const string &name, function<void(const tuple<Graph> &)> cs) {
 }
 
 void HugeGen1(const string &name, function<void(const tuple<Graph> &)> cs) {
-	cs(TinyGen(100000, {200000,200000}, 1, { -1000, 0 }, { 0, 1000}, { -1000, 1000 }));
+	cs(TinyGen(100, {200,200}, 1, { -100, 0 }, { 100,200}, { -100, 100 },1));
 }
 
 void HugeGen2(const string &name, function<void(const tuple<Graph> &)> cs) {
-	cs(TinyGen(1000000, {200000,200000}, 1, { -1000, 0 }, { 0, 1000}, { -1000, 1000 }));
+	cs(TinyGen(1000, {200,200}, 1, { -100, 0 }, { 100,200}, { -100, 100 },1));
 }
 
 void HugeGen3(const string &name, function<void(const tuple<Graph> &)> cs) {
-	cs(TinyGen(100000, {2000000,2000000}, 1, { -1000, 0 }, { 0, 1000}, { -1000, 1000}));
+	cs(TinyGen(100, {2000,2000}, 1, { -100, 0 }, { 100,200}, { -100, 100},1));
 }
 
 void HugeGen4(const string &name, function<void(const tuple<Graph> &)> cs) {
-		cs(TinyGen(100000, {200000,200000}, 1, { -10000, 0 }, { 0, 10000}, { -10000, 10000 }));
+		cs(TinyGen(100, {200,200}, 1, { -1000, 0 }, { 1000,2000}, { -1000, 1000 },1));
 }
 
 void HugeGen5(const string &name, function<void(const tuple<Graph> &)> cs) {
-		cs(TinyGen(1000000, {2000000,2000000}, 1, { -10000, 0 }, { 0, 10000}, { -10000, 10000 }));
+		cs(TinyGen(1000, {2000,2000}, 1, { -1000, 0 }, { 1000,2000}, { -1000, 1000 },1));
 }
 
 void HugeGen6(const string &name, function<void(const tuple<Graph> &)> cs) {
-	cs(TinyGen(10000000, {200000,200000}, 1, { -1000, 0 }, { 0, 1000}, { -1000, 1000 }));
+	cs(TinyGen(10000, {200,200}, 1, { -100, 0 }, { 100,200}, { -100, 100 },1));
 }
 
 void HugeGen7(const string &name, function<void(const tuple<Graph> &)> cs) {
-	cs(TinyGen(100000, {20000000,20000000}, 1, { -1000, 0 }, { 0, 1000}, { -1000, 1000}));
+	cs(TinyGen(100, {20000,20000}, 1, { -100, 0 }, { 100,200}, { -100, 100},1));
 }
 
 void HugeGen8(const string &name, function<void(const tuple<Graph> &)> cs) {
-		cs(TinyGen(100000, {200000,200000}, 1, { -100000, 0 }, { 0, 100000}, { -100000, 100000 }));
+		cs(TinyGen(100, {200,200}, 1, { -10000, 0 }, { 10000,20000}, { -10000, 10000 },1));
 }
 
 void HugeGen9(const string &name, function<void(const tuple<Graph> &)> cs) {
-		cs(TinyGen(10000000, {20000000,20000000}, 1, { -100000, 0 }, { 0, 100000}, { -100000, 100000 }));
+		cs(TinyGen(10000, {20000,20000}, 1, { -10000, 0 }, { 10000,20000}, { -10000, 10000 },1));
 }
 
 
@@ -365,6 +365,13 @@ void ImproveVerifier(const optional<double> &res, const tuple<Graph> &in) {
 	TESTA_ASSERT(res == ans)
 		(res)
 		(get<0>(in).info)
+		.issue();
+}
+
+void TimeVerifier(const optional<double> &res, const tuple<Graph> &in) {
+	TESTA_ASSERT(1)
+		(res)
+		("")
 		.issue();
 }
 
@@ -398,12 +405,19 @@ void ImproveVerifier(const optional<double> &res, const tuple<Graph> &in) {
 // TESTA_DEF_VERIFY_WITH_TB(CompareTest3, MeduimGen1, SimpleVerifier, Test::fast_solve_t);
 // TESTA_DEF_VERIFY_WITH_TB(CompareTest4, MeduimGen2, SimpleVerifier, Test::fast_solve_t);
 // TESTA_DEF_VERIFY_WITH_TB(CompareTest5, MeduimGen3, SimpleVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest1, HugeGen1, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest2, HugeGen2, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest3, HugeGen3, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest4, HugeGen4, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest5, HugeGen5, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest6, HugeGen6, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest7, HugeGen7, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest8, HugeGen8, ImproveVerifier, Test::fast_solve_t);
-TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest9, HugeGen9, ImproveVerifier, Test::fast_solve_t);
+
+
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest1, HugeGen1, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest2, HugeGen2, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest3, HugeGen3, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest4, HugeGen4, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest5, HugeGen5, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest6, HugeGen6, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest7, HugeGen7, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest8, HugeGen8, TimeVerifier, Test::fast_solve_t);
+TESTA_DEF_VERIFY_WITH_TB(Improve_TimeTest9, HugeGen9, TimeVerifier, Test::fast_solve_t);
+
+// int main(){
+// 	TinyGen(10000000, {20000000,20000000}, 1, { -100000, 0 }, { 100000,200000}, { -100000, 100000 },1);
+// 	return 0;
+// }

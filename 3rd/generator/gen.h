@@ -240,9 +240,11 @@ class Graph {
 					edge.push_back({v,u});
 				}	
 			}	
-			e[ {u,v}]=1;
-			if(direction==0) {
-				e[ {v,u}]=1;
+			if(not multiply_edge){
+				e[ {u,v}]=1;
+				if(direction==0) {
+					e[ {v,u}]=1;
+				}
 			}
 		}
 	public:
