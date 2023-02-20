@@ -3,7 +3,6 @@
 #include <compare>
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <string>
 
 template<double eps = 1e-4>
@@ -46,10 +45,3 @@ public:
 template<double eps>
 bool ::std::isnan(const WrappedDouble<eps>& x)
 	{ return ::std::isnan(x.m_value); }
-
-template<double eps>
-class std::numeric_limits<WrappedDouble<eps>> {
-public:
-	static WrappedDouble<eps> infinity()
-		{ return ::std::numeric_limits<double>::infinity(); }
-};

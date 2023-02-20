@@ -2,7 +2,6 @@
 #include <bit>
 #include <cassert>
 #include <cmath>
-#include <limits>
 
 AHO_MS2003::Flow::Flow(size_t n_, Data M_, int U_, std::vector<OmegaLimit> limits_)
 		: n(n_), M(M_), epsilon(1), nodes(n + 1), imbalances(n + 1),
@@ -48,8 +47,8 @@ Data AHO_MS2003::Flow::min_cost() {
 
 void AHO_MS2003::Flow::initialization() {
 	// 部分变量在迭代前后不变。
-	for (size_t i = 0; i <= n; ++i)
-		nodes[i].init(std::numeric_limits<Data>::infinity());
+	// for (size_t i = 0; i <= n; ++i)
+	// 	node[i].xxx;
 	// std::fill(imbalances.begin(), imbalances.end(), 0);
 	std::fill(current_edge.begin(), current_edge.end(), 0);
 	// uq.clear();
@@ -103,7 +102,7 @@ void AHO_MS2003::Flow::send(size_t p) {
 			uq.push(root_id);
 	};
 	while (p != root_id) {
-		auto min = nodes[p].get_min_way_to_root();
+		auto min = nodes[p].get_min_wtrbnr();
 		if (imbalances[p] < min.first) {
 			push(imbalances[p]);
 			return;
@@ -160,6 +159,4 @@ void AHO_MS2003::Flow::cut(size_t p) {
 	
 	auto e_id = G[p][current_edge[p]];
 	add_flow_of_edge(e_id, q(e_id) - nodes[p].get_val());
-	
-	nodes[p].set_val(std::numeric_limits<Data>::infinity());
 }

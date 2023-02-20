@@ -12,14 +12,12 @@ namespace LCT {
 	struct Node {
 		using Val = std::pair<Data, Node*>;
 		
-		void init(Data _val);
-		
 		Node *find_root();
 		void  set_fa(Node *_fa);
 		void  cut();
 		
 		const Data &get_val();
-		const Val  &get_min_way_to_root();
+		Val         get_min_wtrbnr();       // wtrbnr: way to root but no root. ub when call on a root
 		void        set_val(Data _val);
 		void        add_val_way_to_root(Data d);
 		

@@ -4,13 +4,6 @@
 #include "LCT.hpp"
 #include <cassert>
 
-void LCT::Node::init(Data _val) {
-	fa = ch[0] = ch[1] = nullptr;
-	val = _val;
-	min = {val, this};
-	add = 0;
-}
-
 LCT::Node *LCT::Node::find_root() {
 	Node *x = access();
 	while (x->ch[0])
@@ -38,9 +31,16 @@ const Data &LCT::Node::get_val() {
 	return val;
 }
 
-const LCT::Node::Val &LCT::Node::get_min_way_to_root() {
+LCT::Node::Val LCT::Node::get_min_wtrbnr() {
 	access();
-	return min;
+	Val ret = {val, this};
+	for (Node *p = this;; p = p->ch[0]) {
+		p->push_down();
+		if ( p->ch[1] && p->ch[1]->min.first <= ret.first) ret = p->ch[1]->min;
+		if (!p->ch[0])break;
+		if (             p->val              <= ret.first) ret = {p->val, p};
+	}
+	return ret;
 }
 
 void LCT::Node::set_val(Data _val) {
