@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-template<double eps = 1e-4>
+// NOTE: not consider NAN
 class WrappedDouble {
 public:
 	WrappedDouble() = default;
@@ -13,7 +13,7 @@ public:
 	WrappedDouble(size_t value): m_value(value) {}
 	WrappedDouble(int    value): m_value(value) {}
 	
-	using Self = WrappedDouble<eps>;
+	using Self = WrappedDouble;
 	
 	Self operator- () const {return -m_value;}
 	Self operator+ (const Self& other) const {return m_value + other.m_value;}
@@ -28,11 +28,14 @@ public:
 		// not forget inf-inf=>nan
 		return !(std::abs(m_value - other.m_value) > eps);
 	}
-	auto operator<=>(const Self& other) const {
-		if (m_value - other.m_value > +eps) return 1. <=> 0.;
-		if (m_value - other.m_value < -eps) return 0. <=> 1.;
-		return 0. <=> 0.;
-	}
+	bool operator< (const Self& other) const
+		{return m_value + eps < other.m_value;}
+	bool operator<=(const Self& other) const
+		{return m_value - eps <=other.m_value;}
+	bool operator> (const Self& other) const
+		{return m_value - eps > other.m_value;}
+	bool operator>=(const Self& other) const
+		{return m_value + eps >=other.m_value;}
 	
 	friend std::ostream& operator<<(std::ostream& out, const Self& x)
 		{ return out << x.m_value; }
@@ -40,8 +43,6 @@ public:
 		{ out = std::to_string(m_value); }
 	
 	double m_value;
+private:
+	constexpr static double eps = 1e-4;
 };
-
-template<double eps>
-bool ::std::isnan(const WrappedDouble<eps>& x)
-	{ return ::std::isnan(x.m_value); }
